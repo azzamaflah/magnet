@@ -1,0 +1,66 @@
+
+/* ================================== */
+/* === KODE CSS UNTUK SIDEBAR BARU === */
+/* ================================== */
+
+/* 1. Mengatur Posisi Sidebar */
+.sidebar-container {
+    position: fixed; /* Tetap di tempat saat di-scroll */
+    left: 0;
+    top: 0;
+    width: 250px; /* Lebar sidebar */
+    height: 100vh; /* Tinggi penuh layar */
+    background-color: #2c3e50; /* Warna gelap, ganti sesukamu */
+    color: white;
+    padding: 20px;
+    z-index: 1000; /* Memastikan sidebar selalu di atas */
+    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+}
+
+/* 2. Mendorong Konten Utama ke Kanan */
+.content-utama {
+    /*
+      Ini adalah bagian paling penting.
+      Memberi margin kiri seukuran lebar sidebar.
+      Ini "mendorong" navigasi atas dan konten utama Anda ke kanan
+      agar tidak tertutup oleh sidebar.
+    */
+    margin-left: 250px; 
+}
+
+/* 3. Styling Logo dan Link Navigasi */
+.sidebar-logo {
+    font-size: 1.5rem; /* 24px */
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 30px;
+    padding: 10px;
+    border-bottom: 1px solid #4a627a;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li a {
+    display: block;
+    padding: 12px 15px;
+    text-decoration: none;
+    color: #ecf0f1; /* Warna teks link */
+    border-radius: 5px;
+    margin-bottom: 5px;
+    transition: background-color 0.3s ease;
+}
+
+/* 4. Efek Hover dan Link Aktif */
+.sidebar-nav li a:hover {
+    background-color: #34495e; /* Warna saat mouse di atas link */
+}
+
+.sidebar-nav li.active > a {
+    background-color: #1abc9c; /* Warna untuk link yang aktif (halaman saat ini) */
+    color: white;
+    font-weight: 500;
+}

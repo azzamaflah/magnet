@@ -1,0 +1,4 @@
+[18-Nov-2025 01:04:15 UTC] PHP Fatal error:  Composer detected issues in your platform: Your Composer dependencies require a PHP version ">= 8.2.0". You are running 7.4.33. in /home/bpsbantu/public_html/sementara/magnet/vendor/composer/platform_check.php on line 24
+[06-Jan-2026 09:21:15 UTC] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/bpsbantu/public_html/sementara/magnet/app/Http/Controllers/PendaftaranController.php on line 17
+[06-Jan-2026 09:21:17 UTC] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/bpsbantu/public_html/sementara/magnet/app/Http/Controllers/PendaftaranController.php on line 17
+[06-Jan-2026 09:21:39 UTC] PHP Fatal error:  Cannot use Carbon\Carbon as Carbon because the name is already in use in /home/bpsbantu/public_html/sementara/magnet/app/Http/Controllers/PendaftaranController.php on line 17
