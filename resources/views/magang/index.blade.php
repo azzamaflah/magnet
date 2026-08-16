@@ -357,49 +357,18 @@
                 }, 300); // Sesuaikan dengan duration-300 di CSS
             }
 
-            // // Aksi tombol Konfirmasi Hapus
-            // confirmBtn.addEventListener('click', function() {
-            //     if (currentFormId) {
-            //         document.getElementById(currentFormId).submit();
-            //     }
-            // });
-            
-            // modifikais start
             // Aksi tombol Konfirmasi Hapus
             confirmBtn.addEventListener('click', function() {
                 if (currentFormId) {
                     const form = document.getElementById(currentFormId);
-                    const actionUrl = form.action;
-                    const formData = new FormData(form);
-            
-                    // 1. Ubah tampilan tombol jadi Loading
-                    const originalText = confirmBtn.innerText;
-                    confirmBtn.innerText = 'Menghapus...';
-                    confirmBtn.disabled = true;
-                    confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
-            
-                    // 2. Kirim Request Hapus via Fetch (AJAX)
-                    fetch(actionUrl, {
-                        method: 'POST',
-                        body: formData,
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest' // Memberitahu Laravel ini AJAX
-                        }
-                    })
-                    .then(response => {
-                        // 3. Apapun hasilnya, Refresh halaman agar bersih
-                        // Kita pakai reload() agar Flash Message dari session 'success' tetap muncul
-                        // karena Laravel menyimpan session di request berikutnya.
-                        window.location.reload(); 
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('Terjadi kesalahan saat menghapus data.');
-                        window.location.reload(); // Tetap reload untuk keamanan
-                    });
+                    if (form) {
+                        confirmBtn.innerText = 'Menghapus...';
+                        confirmBtn.disabled = true;
+                        confirmBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                        form.submit();
+                    }
                 }
             });
-            // modifikasi end
             
             // Tutup jika klik di luar area modal (backdrop)
             modal.addEventListener('click', function(e) {

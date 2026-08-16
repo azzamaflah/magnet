@@ -1,5 +1,4 @@
 <?php
-// app/Models/Pendaftaran.php
 
 namespace App\Models;
 
@@ -13,6 +12,7 @@ class Pendaftaran extends Model
 
     protected $fillable = [
         'user_id',
+        'lowongan_id',
         'nama_pendaftar',
         'email', 
         'surat_permohonan',
@@ -30,5 +30,10 @@ class Pendaftaran extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function lowongan(): BelongsTo
+    {
+        return $this->belongsTo(Lowongan::class);
     }
 }

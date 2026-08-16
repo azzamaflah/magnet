@@ -1,11 +1,9 @@
-{{-- resources/views/daftar/create.blade.php --}}
+{{-- resources/views/daftar/edit.blade.php --}}
 <x-main-layout>
-    {{-- Load Flatpickr CSS via CDN --}}
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 
     <style>
-        /* Custom Override untuk mencocokkan tema website Anda */
         .flatpickr-calendar {
             background: #2a2a2a !important;
             border: 1px solid #3a3a3a !important;
@@ -20,7 +18,7 @@
         .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, 
         .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, 
         .flatpickr-day.endRange.nextMonthDay {
-            background: #d97757 !important; /* Warna aksen sesuai tema Anda */
+            background: #d97757 !important;
             border-color: #d97757 !important;
         }
         .flatpickr-day:hover {
@@ -38,7 +36,6 @@
         .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover {
             color: #555 !important;
         }
-        /* Icon Input Wrapper */
         .date-input-wrapper {
             position: relative;
         }
@@ -62,7 +59,7 @@
                         <i class="fas fa-arrow-left"></i>
                     </a>
                     <h2 class="claude-title text-xl sm:text-2xl text-white">
-                        Form Pendaftaran Magang
+                        Edit Berkas & Data Pendaftaran Magang
                     </h2>
                 </div>
             </div>
@@ -70,12 +67,11 @@
 
         <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6">
             
-            {{-- Form Container --}}
             <div class="bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-lg overflow-hidden">
                 
-                {{-- FORM --}}
-                <form method="POST" action="{{ route('daftar.store') }}" enctype="multipart/form-data" id="pendaftaranForm">
+                <form method="POST" action="{{ route('daftar.update', $pendaftaran) }}" enctype="multipart/form-data" id="pendaftaranEditForm">
                     @csrf
+                    @method('PUT')
 
                     <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
 
@@ -90,7 +86,7 @@
                                 <select name="lowongan_id" id="lowongan_id" class="filter-select">
                                     <option value="">-- Pendaftaran Magang Umum (Tanpa Spesifik Divisi) --</option>
                                     @foreach($lowongans as $item)
-                                        <option value="{{ $item->id }}" {{ (old('lowongan_id', $selectedLowonganId ?? '') == $item->id) ? 'selected' : '' }}>
+                                        <option value="{{ $item->id }}" {{ (old('lowongan_id', $pendaftaran->lowongan_id) == $item->id) ? 'selected' : '' }}>
                                             {{ $item->judul_posisi }} ({{ $item->divisi }})
                                         </option>
                                     @endforeach
@@ -102,29 +98,21 @@
                             <div>
                                 <label for="nama_pendaftar" class="filter-label mb-2">Nama Lengkap</label>
                                 <input type="text" name="nama_pendaftar" id="nama_pendaftar" class="filter-input" 
-                                       placeholder="Masukkan nama lengkap Anda" value="{{ old('nama_pendaftar') }}" required>
+                                       placeholder="Masukkan nama lengkap Anda" value="{{ old('nama_pendaftar', $pendaftaran->nama_pendaftar) }}" required>
                                 @error('nama_pendaftar') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
-                            </div>
-
-                            <div>
-                                <label for="email" class="filter-label mb-2">Alamat Email Aktif</label>
-                                <input type="email" name="email" id="email" class="filter-input" 
-                                       placeholder="contoh: emailanda@gmail.com" value="{{ old('email', auth()->user()->email) }}" required>
-                                <span class="text-xs text-gray-400 mt-1">Notifikasi kelulusan & instruksi magang akan dikirim ke email ini.</span>
-                                @error('email') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
                                 <label for="asal_kampus" class="filter-label mb-2">Asal Kampus</label>
                                 <input type="text" name="asal_kampus" id="asal_kampus" class="filter-input" 
-                                       placeholder="Contoh: Universitas Gadjah Mada" value="{{ old('asal_kampus') }}" required>
+                                       placeholder="Contoh: Universitas Gadjah Mada" value="{{ old('asal_kampus', $pendaftaran->asal_kampus) }}" required>
                                 @error('asal_kampus') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             <div>
                                 <label for="prodi" class="filter-label mb-2">Prodi / Jurusan</label>
                                 <input type="text" name="prodi" id="prodi" class="filter-input" 
-                                       placeholder="Contoh: Teknologi Informasi / Statistika" value="{{ old('prodi') }}" required>
+                                       placeholder="Contoh: Teknologi Informasi / Statistika" value="{{ old('prodi', $pendaftaran->prodi) }}" required>
                                 @error('prodi') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
 
@@ -136,7 +124,7 @@
                                         <input type="text" name="tanggal_mulai" id="tanggal_mulai" 
                                                class="filter-input cursor-pointer" 
                                                placeholder="Pilih Tanggal Mulai"
-                                               value="{{ old('tanggal_mulai') }}" required readonly>
+                                               value="{{ old('tanggal_mulai', $pendaftaran->tanggal_mulai) }}" required readonly>
                                         <i class="fas fa-calendar-alt date-input-icon"></i>
                                     </div>
                                     @error('tanggal_mulai') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
@@ -147,7 +135,7 @@
                                         <input type="text" name="tanggal_selesai" id="tanggal_selesai" 
                                                class="filter-input cursor-pointer" 
                                                placeholder="Pilih Tanggal Selesai"
-                                               value="{{ old('tanggal_selesai') }}" required readonly>
+                                               value="{{ old('tanggal_selesai', $pendaftaran->tanggal_selesai) }}" required readonly>
                                         <i class="fas fa-calendar-check date-input-icon"></i>
                                     </div>
                                     @error('tanggal_selesai') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
@@ -161,9 +149,14 @@
                             {{-- Surat Permohonan (PDF) --}}
                             <div>
                                 <label for="surat_permohonan" class="filter-label mb-2">Surat Permohonan Magang (PDF)</label>
+                                @if($pendaftaran->surat_permohonan)
+                                    <p class="text-xs text-green-400 mb-1 flex items-center gap-1">
+                                        <i class="fas fa-check"></i> File saat ini tersimpan. Unggah hanya jika ingin mengganti.
+                                    </p>
+                                @endif
                                 <input type="file" name="surat_permohonan" id="surat_permohonan" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
-                                       accept=".pdf" required data-max-size="2">
+                                       accept=".pdf" data-max-size="2">
                                 <span class="text-xs text-gray-400 mt-1">Hanya file .pdf, maks 2MB.</span>
                                 <p class="text-red-400 text-xs mt-1 error-message hidden"></p> 
                                 @error('surat_permohonan') <span class="block text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
@@ -172,9 +165,14 @@
                             {{-- Surat Kampus (PDF) --}}
                             <div>
                                 <label for="surat_kampus" class="filter-label mb-2">Surat Keterangan/Rekomendasi Kampus (PDF)</label>
+                                @if($pendaftaran->surat_kampus)
+                                    <p class="text-xs text-green-400 mb-1 flex items-center gap-1">
+                                        <i class="fas fa-check"></i> File saat ini tersimpan. Unggah hanya jika ingin mengganti.
+                                    </p>
+                                @endif
                                 <input type="file" name="surat_kampus" id="surat_kampus" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
-                                       accept=".pdf" required data-max-size="2">
+                                       accept=".pdf" data-max-size="2">
                                 <span class="text-xs text-gray-400 mt-1">Surat resmi dari Universitas/Fakultas. Maks 2MB.</span>
                                 <p class="text-red-400 text-xs mt-1 error-message hidden"></p>
                                 @error('surat_kampus') <span class="block text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
@@ -183,9 +181,15 @@
                             {{-- Pas Foto (JPG/PNG) --}}
                             <div>
                                 <label for="pas_foto" class="filter-label mb-2">Pas Foto (JPG/PNG)</label>
+                                @if($pendaftaran->pas_foto)
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <img src="{{ asset('storage/' . $pendaftaran->pas_foto) }}" class="w-12 h-12 object-cover rounded-lg border border-[#4a4a4a]">
+                                        <span class="text-xs text-green-400">Foto tersimpan. Unggah file baru untuk mengganti.</span>
+                                    </div>
+                                @endif
                                 <input type="file" name="pas_foto" id="pas_foto" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
-                                       accept="image/jpeg,image/png,image/jpg" required data-max-size="1">
+                                       accept="image/jpeg,image/png,image/jpg" data-max-size="1">
                                 <span class="text-xs text-gray-400 mt-1">Hanya file .jpg, .jpeg, .png, maks 1MB.</span>
                                 <p class="text-red-400 text-xs mt-1 error-message hidden"></p>
                                 @error('pas_foto') <span class="block text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
@@ -200,7 +204,7 @@
                                 <i class="fas fa-times"></i> Batal
                             </a>
                             <button type="submit" id="submitBtn" class="filter-btn filter-btn-primary w-full sm:w-auto">
-                                <i class="fas fa-paper-plane"></i> Kirim Pendaftaran
+                                <i class="fas fa-save"></i> Perbarui & Kirim Ulang
                             </button>
                         </div>
                     </div>
@@ -217,7 +221,6 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 1. Inisialisasi Tanggal Mulai
             const configMulai = {
                 locale: "id",
                 dateFormat: "Y-m-d",
@@ -232,7 +235,6 @@
                 }
             };
             
-            // 2. Inisialisasi Tanggal Selesai
             const configSelesai = {
                 locale: "id",
                 dateFormat: "Y-m-d",
@@ -245,7 +247,6 @@
             const pickerMulai = flatpickr("#tanggal_mulai", configMulai);
             const pickerSelesai = flatpickr("#tanggal_selesai", configSelesai);
 
-            // Validasi File
             const fileInputs = document.querySelectorAll('.validate-file');
 
             fileInputs.forEach(input => {

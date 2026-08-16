@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory; // Pastikan ini HasFactory
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // <-- Tambahkan ini
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Magang extends Model
 {
-    use HasFactory; 
+    use HasFactory;
 
     protected $fillable = [
-        'user_id', 
+        'user_id',
+        'lowongan_id',
         'nama',
         'email',
         'foto',
@@ -31,7 +32,7 @@ class Magang extends Model
     ];
 
     protected $casts = [
-        'tanggal_mulai' => 'date',
+        'tanggal_mulai'   => 'date',
         'tanggal_selesai' => 'date',
     ];
 
@@ -42,13 +43,13 @@ class Magang extends Model
             if ($magang->tanggal_mulai && $magang->tanggal_selesai) {
                 $mulai = Carbon::parse($magang->tanggal_mulai);
                 $selesai = Carbon::parse($magang->tanggal_selesai);
-                
+
                 $periode = $mulai->diffInMonths($selesai);
                 if ($selesai->day > $mulai->day) {
                     $periode += 1;
                 }
                 if ($periode == 0 && $mulai->diffInDays($selesai) > 0) {
-                    $periode = 1; 
+                    $periode = 1;
                 }
                 $magang->periode_bulan = $periode;
 
@@ -64,13 +65,14 @@ class Magang extends Model
         });
     }
 
-    /**
-     * ✅ TAMBAHKAN RELASI INI
-     * Mendapatkan user yang memiliki data magang ini.
-     */
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function lowongan(): BelongsTo
+    {
+        return $this->belongsTo(Lowongan::class);
     }
 
     public function getInitialsAttribute()

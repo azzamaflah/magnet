@@ -166,7 +166,12 @@
                                         {{ $pendaftarans->firstItem() + $loop->index }}
                                     </td>
                                     <td class="px-6 py-4 font-medium text-white whitespace-nowrap">
-                                        {{ $pendaftar->nama_pendaftar }}
+                                        <div>{{ $pendaftar->nama_pendaftar }}</div>
+                                        @if($pendaftaran = $pendaftar->lowongan)
+                                            <span class="text-[11px] text-[#e88968] font-normal block mt-0.5">
+                                                <i class="fas fa-briefcase text-[10px] mr-0.5"></i> {{ $pendaftar->lowongan->judul_posisi }}
+                                            </span>
+                                        @endif
                                     </td>
                                     <td class="px-6 py-4">{{ $pendaftar->asal_kampus }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap">
@@ -282,6 +287,11 @@
                                 <h3 class="font-semibold text-white text-lg leading-tight">
                                     {{ $pendaftar->nama_pendaftar }}
                                 </h3>
+                                @if($pendaftar->lowongan)
+                                    <span class="text-xs text-[#e88968] font-normal block mt-1">
+                                        <i class="fas fa-briefcase text-[10px] mr-1"></i> {{ $pendaftar->lowongan->judul_posisi }}
+                                    </span>
+                                @endif
                             </div>
                             <div>
                                 @if ($pendaftar->status == 'pending')
@@ -408,8 +418,7 @@
                 color: '#fff'                  // Teks putih
             });
         @endif
-
-        // 2. SweetAlert2 logic untuk Hapus Data (Event Delegation)
+        // 2. SweetAlert2 logic untuk Hapus Data (Event Delegation dengan fallback)
         document.addEventListener('click', function(e) {
             const button = e.target.closest('.btn-delete');
             
@@ -418,37 +427,41 @@
                 e.stopPropagation(); 
 
                 const form = button.closest('.delete-form');
+                if (!form) return;
                 const name = form.getAttribute('data-name') || 'Data ini';
 
-                Swal.fire({
-                    title: 'Hapus Data?',
-                    text: `Anda yakin ingin menghapus data "${name}"? Berkas file juga akan dihapus permanen.`,
-                    icon: 'warning',
-                    showCancelButton: true,
-                    confirmButtonColor: '#ef4444', 
-                    cancelButtonColor: '#374151', 
-                    confirmButtonText: 'Ya, Hapus!',
-                    cancelButtonText: 'Batal',
-                    background: '#1f2937', 
-                    color: '#fff'
-                }).then((result) => {
-                    if (result.isConfirmed) {
-                        // Tampilkan loading saat proses hapus
-                        Swal.fire({
-                            title: 'Sedang memproses...',
-                            text: 'Mohon tunggu sebentar',
-                            allowOutsideClick: false,
-                            didOpen: () => {
-                                Swal.showLoading();
-                            },
-                            background: '#1f2937',
-                            color: '#fff'
-                        });
-
-                        // Submit form secara manual
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        title: 'Hapus Data?',
+                        text: `Anda yakin ingin menghapus data "${name}"? Berkas file juga akan dihapus permanen.`,
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#ef4444', 
+                        cancelButtonColor: '#374151', 
+                        confirmButtonText: 'Ya, Hapus!',
+                        cancelButtonText: 'Batal',
+                        background: '#1f2937', 
+                        color: '#fff'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            Swal.fire({
+                                title: 'Sedang memproses...',
+                                text: 'Mohon tunggu sebentar',
+                                allowOutsideClick: false,
+                                didOpen: () => {
+                                    Swal.showLoading();
+                                },
+                                background: '#1f2937',
+                                color: '#fff'
+                            });
+                            form.submit();
+                        }
+                    });
+                } else {
+                    if (confirm(`Anda yakin ingin menghapus data "${name}"?`)) {
                         form.submit();
                     }
-                });
+                }
             }
         });
     </script>

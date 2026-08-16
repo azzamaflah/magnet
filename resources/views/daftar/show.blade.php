@@ -21,7 +21,7 @@
             
             {{-- Menampilkan Error Validasi --}}
             @if ($errors->any())
-                <div class="mb-4 bg-red-900 border border-red-700 text-red-200 px-4 py-3 rounded-lg relative" role="alert">
+                <div class="mb-4 bg-red-900/50 border border-red-700 text-red-200 px-4 py-3 rounded-lg relative" role="alert">
                     <strong class="font-bold">Oops! Terjadi kesalahan:</strong>
                     <ul class="mt-2 list-disc list-inside">
                         @foreach ($errors->all() as $error)
@@ -49,12 +49,27 @@
                                     <dt class="text-gray-400">Email</dt>
                                     <dd class="text-white font-medium">{{ $pendaftaran->email }}</dd>
                                 </div>
+
+                                {{-- Formasi Lowongan (Jika Ada) --}}
+                                <div class="md:col-span-2 bg-[#1a1a1a] p-3 rounded-lg border border-[#3a3a3a]">
+                                    <dt class="text-xs text-gray-400 uppercase tracking-wider font-semibold">
+                                        <i class="fas fa-briefcase text-[#e88968] mr-1"></i> Formasi / Lowongan Magang
+                                    </dt>
+                                    <dd class="text-white font-medium mt-1">
+                                        @if($pendaftaran->lowongan)
+                                            <span class="text-[#e88968] font-bold">{{ $pendaftaran->lowongan->judul_posisi }}</span>
+                                            <span class="text-xs text-gray-400 block mt-0.5">Penempatan: {{ $pendaftaran->lowongan->divisi }}</span>
+                                        @else
+                                            <span class="text-gray-400 italic">Pendaftaran Magang Umum (Tanpa Spesifik Formasi)</span>
+                                        @endif
+                                    </dd>
+                                </div>
+
                                 <div>
                                     <dt class="text-gray-400">Asal Kampus</dt>
                                     <dd class="text-white font-medium">{{ $pendaftaran->asal_kampus }}</dd>
                                 </div>
 
-                                {{-- ✅ TAMBAHAN BARU: PRODI/JURUSAN --}}
                                 <div>
                                     <dt class="text-gray-400">Prodi / Jurusan</dt>
                                     <dd class="text-white font-medium">{{ $pendaftaran->prodi ?? '-' }}</dd>
@@ -69,22 +84,30 @@
                                 </div>
                                 <div>
                                     <dt class="text-gray-400">Status Saat Ini</dt>
-                                    <dd>
+                                    <dd class="mt-1">
                                         @if ($pendaftaran->status == 'pending')
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-yellow-900 text-yellow-300">Menunggu</span>
+                                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-yellow-500/20 text-yellow-300 border border-yellow-500/30">
+                                                <i class="fas fa-clock mr-1"></i> Menunggu Review
+                                            </span>
                                         @elseif ($pendaftaran->status == 'approved')
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-green-900 text-green-300">Disetujui</span>
+                                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-green-500/20 text-green-300 border border-green-500/30">
+                                                <i class="fas fa-check-circle mr-1"></i> Disetujui
+                                            </span>
                                         @elseif ($pendaftaran->status == 'conditional')
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-blue-900 text-blue-300">Bersyarat</span>
+                                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                                <i class="fas fa-exclamation-circle mr-1"></i> Bersyarat
+                                            </span>
                                         @else
-                                            <span class="px-2 py-1 text-xs font-medium rounded-full bg-red-900 text-red-300">Ditolak</span>
+                                            <span class="px-3 py-1 text-xs font-medium rounded-full bg-red-500/20 text-red-300 border border-red-500/30">
+                                                <i class="fas fa-times-circle mr-1"></i> Ditolak
+                                            </span>
                                         @endif
                                     </dd>
                                 </div>
                                 @if($pendaftaran->remarks)
                                 <div class="md:col-span-2">
                                     <dt class="text-gray-400">Catatan Terakhir</dt>
-                                    <dd class="text-white font-medium whitespace-pre-wrap">{{ $pendaftaran->remarks }}</dd>
+                                    <dd class="text-white font-medium whitespace-pre-wrap bg-[#1a1a1a] p-3 rounded-lg border border-[#3a3a3a] mt-1">{{ $pendaftaran->remarks }}</dd>
                                 </div>
                                 @endif
                             </div>

@@ -38,6 +38,7 @@
     {{-- NAVIGASI --}}
     <nav class="flex-1 overflow-y-auto py-4 space-y-2">
 
+        {{-- Dashboard --}}
         <a href="{{ route('dashboard') }}"
             class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
             {{ request()->routeIs('dashboard') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
@@ -51,6 +52,21 @@
             </span>
         </a>
 
+        {{-- Lowongan Magang (MENU BARU) --}}
+        <a href="{{ route('lowongan.index') }}"
+            class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
+            {{ request()->routeIs('lowongan.*') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
+            :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Lowongan Magang' : ''">
+            <i class="fas fa-briefcase w-5 text-center flex-shrink-0"></i>
+            <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
+                x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
+                x-transition:leave-end="opacity-0">
+                Lowongan Magang
+            </span>
+        </a>
+
+        {{-- Pendaftaran Magang --}}
         <a href="{{ route('daftar.index') }}"
             class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
             {{ request()->routeIs('daftar.*') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
@@ -64,6 +80,7 @@
             </span>
         </a>
 
+        {{-- Data Magang --}}
         <a href="{{ route('magang.index') }}"
             class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
             {{ request()->routeIs('magang.index') || request()->routeIs('magang.show') || request()->routeIs('magang.edit') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
@@ -92,7 +109,7 @@
                 </span>
             </a>
 
-            {{-- Link Pengaturan Magang (MENU BARU) --}}
+            {{-- Link Pengaturan Magang --}}
             <a href="{{ route('settings.index') }}"
                 class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
                 {{ request()->routeIs('settings.*') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
@@ -180,8 +197,4 @@
     }
 </style>
 
-{{--
-Script Alpine.js ditempatkan di sini.
-Script @alpinejs/persist sudah dihapus.
---}}
 <script src="//unpkg.com/alpinejs" defer></script>
