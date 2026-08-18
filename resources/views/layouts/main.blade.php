@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="icon" type="image/png" href="{{ asset('images/Magnet.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <script>
         if (localStorage.getItem('_x_expanded') === 'false') {
@@ -1405,6 +1406,10 @@
 
     {{-- Script Alpine sudah ada di sidebar.blade.php --}}
     @stack('scripts')
+
+    {{-- MagBot: AI Chatbot Widget --}}
+    <x-chatbot-widget />
+
 </body>
 
 </html>

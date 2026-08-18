@@ -133,6 +133,27 @@ graph TD
   * Status terkini pendaftaran magang milik pengguna (termasuk badge posisi lowongan yang dilamar).
   * Daftar rekan peserta magang yang sedang aktif bertugas di BPS Bantul.
 
+### 4.9. Modul Asisten Virtual / Chatbot (FR-CHATBOT)
+
+> **Fitur Planned** — Chatbot cerdas berbasis AI (*MagBot*) yang membantu calon peserta magang dan pengguna umum mendapatkan informasi secara cepat dan interaktif tanpa harus menavigasi seluruh halaman aplikasi.
+
+* **FR-CHATBOT-01 (Antarmuka):** Chatbot ditampilkan sebagai *floating widget* di pojok kanan bawah setiap halaman (setelah login), berupa ikon bubble chat berlabel **"MagBot"** yang dapat dibuka/ditutup tanpa meninggalkan halaman.
+* **FR-CHATBOT-02 (AI Engine):** Chatbot menggunakan **Google Gemini API** sebagai *language model* utama, dikonfigurasi dengan *system prompt* berisi konteks spesifik:
+  * Panduan pendaftaran dan dokumen yang diperlukan.
+  * Daftar divisi BPS Kabupaten Bantul beserta kualifikasi dan tugasnya.
+  * Penjelasan alur persetujuan (pending → approved / conditional / rejected).
+  * Persyaratan durasi minimal magang.
+* **FR-CHATBOT-03 (Topik yang Dijawab):** MagBot mampu menjawab pertanyaan seputar:
+  * *"Dokumen apa saja yang perlu disiapkan?"*
+  * *"Saya dari jurusan IT, divisi mana yang cocok?"*
+  * *"Apa maksud status 'conditional'?"*
+  * *"Berapa lama minimal durasi magang?"*
+  * *"Bagaimana cara konfirmasi kehadiran setelah diterima?"*
+* **FR-CHATBOT-04 (Quick Reply):** Tersedia tombol *quick reply* untuk pertanyaan umum paling sering agar pengguna tidak perlu mengetik manual (contoh: "Cara Daftar", "Syarat Dokumen", "Info Divisi", "Status Pendaftaran").
+* **FR-CHATBOT-05 (Keamanan API):** Request ke Gemini API dilakukan melalui **Laravel Controller** (backend) sehingga API key tidak pernah terekspos ke sisi browser/client.
+* **FR-CHATBOT-06 (Batasan Topik):** Jika pertanyaan di luar konteks magang BPS Bantul, MagBot mengarahkan pengguna dengan sopan untuk menghubungi admin atau mengunjungi halaman yang relevan.
+* **FR-CHATBOT-07 (Riwayat Percakapan):** Riwayat pesan dipertahankan selama sesi browser aktif (disimpan di `sessionStorage`) sehingga percakapan tidak hilang saat pengguna berpindah halaman.
+
 ---
 
 ## 5. 🔒 Kebutuhan Non-Fungsional (Non-Functional Requirements)

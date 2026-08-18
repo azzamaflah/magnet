@@ -70,6 +70,9 @@ Route::middleware('auth')->group(function () {
 
     // Rute 'show' untuk Magang (semua user auth bisa lihat)
     Route::get('/magang/{magang}', [MagangController::class, 'show'])->name('magang.show');
+
+    // --- CHATBOT (MagBot) ---
+    Route::post('/chatbot', [\App\Http\Controllers\ChatbotController::class, 'chat'])->name('chatbot.message');
 });
 
 Route::get('/logout', function () {
