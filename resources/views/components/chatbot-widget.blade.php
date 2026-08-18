@@ -13,6 +13,7 @@
         align-items: flex-end;
         gap: 12px;
         font-family: 'Inter', sans-serif;
+        pointer-events: none; /* Jangan blokir klik elemen lain di layar */
     }
 
     /* Floating Toggle Button */
@@ -31,10 +32,12 @@
         box-shadow: 0 4px 20px rgba(217, 119, 87, 0.5);
         transition: transform 0.2s, box-shadow 0.2s;
         flex-shrink: 0;
+        pointer-events: auto; /* Tombol bisa diklik */
+        position: relative;
     }
 
     #magbot-toggle:hover {
-        transform: scale(1.1);
+        transform: scale(1.08);
         box-shadow: 0 6px 28px rgba(217, 119, 87, 0.65);
     }
 
@@ -57,12 +60,14 @@
         overflow: hidden;
         transform-origin: bottom right;
         transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
+        pointer-events: auto; /* Window bisa diklik saat terbuka */
     }
 
     #magbot-window.hidden-widget {
         transform: scale(0.8) translateY(20px);
         opacity: 0;
-        pointer-events: none;
+        pointer-events: none !important;
+        display: none;
     }
 
     /* Chat Header */
@@ -122,7 +127,7 @@
         border: none;
         color: #6b7280;
         cursor: pointer;
-        padding: 4px;
+        padding: 4px 8px;
         border-radius: 6px;
         font-size: 0.85rem;
         transition: color 0.15s, background 0.15s;
@@ -142,6 +147,7 @@
         flex-direction: column;
         gap: 12px;
         scroll-behavior: smooth;
+        max-height: 320px;
     }
 
     #magbot-messages::-webkit-scrollbar { width: 4px; }
@@ -326,13 +332,14 @@
         }
         #magbot-window {
             width: calc(100vw - 32px);
+            max-height: 80vh;
         }
     }
 
-    /* Markdown-like formatting in bot messages */
-    .magbot-msg-bubble strong { font-weight: 600; }
-    .magbot-msg-bubble ul { list-style: disc; padding-left: 1rem; margin-top: 4px; }
-    .magbot-msg-bubble ol { list-style: decimal; padding-left: 1rem; margin-top: 4px; }
+    /* Markdown styling inside messages */
+    .magbot-msg-bubble strong { font-weight: 600; color: #fff; }
+    .magbot-msg-bubble ul { list-style: disc; padding-left: 1.2rem; margin-top: 4px; }
+    .magbot-msg-bubble ol { list-style: decimal; padding-left: 1.2rem; margin-top: 4px; }
     .magbot-msg-bubble li { margin-bottom: 2px; }
     .magbot-msg-bubble p { margin-bottom: 4px; }
     .magbot-msg-bubble code { background: rgba(255,255,255,0.1); padding: 1px 4px; border-radius: 3px; font-family: monospace; font-size: 0.75rem; }
@@ -391,7 +398,7 @@
     </div>
 
     {{-- Toggle Button --}}
-    <button id="magbot-toggle" title="Buka MagBot" style="position:relative;">
+    <button id="magbot-toggle" title="Buka MagBot">
         <span id="magbot-badge" style="display:none;">1</span>
         <i class="fas fa-robot icon-open" id="icon-open"></i>
         <i class="fas fa-times icon-close" id="icon-close" style="display:none;"></i>
@@ -399,9 +406,9 @@
 </div>
 
 <script>
-(function () {
-    const csrfToken  = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-    const chatRoute  = '{{ route("chatbot.message") }}';
+document.addEventListener('DOMContentLoaded', function () {
+    const csrfToken   = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
+    const chatRoute   = '{{ route("chatbot.message") }}';
     const userInitial = '{{ substr(auth()->user()->name, 0, 1) }}';
 
     // DOM refs
@@ -416,10 +423,11 @@
     const iconOpen     = document.getElementById('icon-open');
     const iconClose    = document.getElementById('icon-close');
 
+    if (!toggleBtn || !window_) return;
+
     let isOpen      = false;
     let isTyping    = false;
-    let history     = []; // Riwayat percakapan (user + model)
-    let hasNewMsg   = false;
+    let history     = [];
 
     // === Utility: Simple Markdown Parser ===
     function parseMarkdown(text) {
@@ -437,24 +445,38 @@
     // === Toggle Window ===
     function openChat() {
         isOpen = true;
-        window_.classList.remove('hidden-widget');
+        window_.style.display = 'flex';
+        setTimeout(() => {
+            window_.classList.remove('hidden-widget');
+        }, 10);
         iconOpen.style.display  = 'none';
         iconClose.style.display = 'block';
         badge.style.display     = 'none';
-        hasNewMsg = false;
         scrollToBottom();
-        input.focus();
+        input?.focus();
     }
 
     function closeChat() {
         isOpen = false;
         window_.classList.add('hidden-widget');
+        setTimeout(() => {
+            if (!isOpen) window_.style.display = 'none';
+        }, 250);
         iconOpen.style.display  = 'block';
         iconClose.style.display = 'none';
     }
 
-    toggleBtn.addEventListener('click', () => isOpen ? closeChat() : openChat());
-    closeBtn.addEventListener('click', closeChat);
+    toggleBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        isOpen ? closeChat() : openChat();
+    });
+
+    closeBtn?.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        closeChat();
+    });
 
     // === Add Message Bubble ===
     function addMessage(role, text) {
@@ -505,29 +527,34 @@
     }
 
     function scrollToBottom() {
-        messages.scrollTop = messages.scrollHeight;
+        if (messages) messages.scrollTop = messages.scrollHeight;
     }
 
     // === Send Message ===
     async function sendMessage(text) {
-        if (!text.trim() || isTyping) return;
+        if (!text || !text.trim() || isTyping) return;
+
+        const cleanText = text.trim();
 
         // Sembunyikan quick replies setelah pertama kali mengirim
-        document.getElementById('magbot-quick-replies').style.display = 'none';
+        const qrContainer = document.getElementById('magbot-quick-replies');
+        if (qrContainer) qrContainer.style.display = 'none';
 
         // Tambahkan ke UI
-        addMessage('user', text);
+        addMessage('user', cleanText);
 
         // Tambahkan ke history
-        history.push({ role: 'user', text: text.trim() });
+        history.push({ role: 'user', text: cleanText });
 
         // Reset input
-        input.value = '';
-        input.style.height = '38px';
+        if (input) {
+            input.value = '';
+            input.style.height = '38px';
+        }
 
         // Loading state
         isTyping = true;
-        sendBtn.disabled = true;
+        if (sendBtn) sendBtn.disabled = true;
         showTyping();
 
         try {
@@ -539,8 +566,8 @@
                     'X-Requested-With': 'XMLHttpRequest',
                 },
                 body: JSON.stringify({
-                    message: text.trim(),
-                    history: history.slice(-10), // Kirim 10 pesan terakhir sebagai konteks
+                    message: cleanText,
+                    history: history.slice(-10),
                 }),
             });
 
@@ -553,13 +580,10 @@
 
             // Simpan ke history
             history.push({ role: 'model', text: reply });
-
-            // Simpan ke sessionStorage
             saveHistory();
 
             // Jika window tertutup, tampilkan badge
-            if (!isOpen) {
-                hasNewMsg = true;
+            if (!isOpen && badge) {
                 badge.style.display = 'flex';
             }
 
@@ -569,15 +593,15 @@
             console.error('MagBot error:', err);
         } finally {
             isTyping = false;
-            sendBtn.disabled = false;
-            input.focus();
+            if (sendBtn) sendBtn.disabled = false;
+            input?.focus();
         }
     }
 
     // === Event Listeners ===
-    sendBtn.addEventListener('click', () => sendMessage(input.value));
+    sendBtn?.addEventListener('click', () => sendMessage(input?.value));
 
-    input.addEventListener('keydown', (e) => {
+    input?.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
             sendMessage(input.value);
@@ -585,15 +609,15 @@
     });
 
     // Auto-resize textarea
-    input.addEventListener('input', () => {
+    input?.addEventListener('input', () => {
         input.style.height = '38px';
         input.style.height = Math.min(input.scrollHeight, 90) + 'px';
     });
 
     // Quick reply buttons
     quickReplies.forEach(btn => {
-        btn.addEventListener('click', () => {
-            sendMessage(btn.getAttribute('data-msg'));
+        btn.addEventListener('click', function() {
+            sendMessage(this.getAttribute('data-msg'));
         });
     });
 
@@ -613,17 +637,16 @@
 
             history = parsed;
 
-            // Render ulang pesan dari history (skip welcome message)
             parsed.forEach(item => {
                 addMessage(item.role === 'user' ? 'user' : 'bot', item.text);
             });
 
-            // Sembunyikan quick replies jika sudah ada history
-            document.getElementById('magbot-quick-replies').style.display = 'none';
+            const qrContainer = document.getElementById('magbot-quick-replies');
+            if (qrContainer) qrContainer.style.display = 'none';
         } catch(e) {}
     }
 
     // Load history on init
     loadHistory();
-})();
+});
 </script>

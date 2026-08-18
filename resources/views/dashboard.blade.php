@@ -103,6 +103,84 @@
                             }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
                         });
                     }
+
+                    // 4. GRAFIK KAMPUS (SEDANG MAGANG VS SELESAI)
+                    const ctxKampus = document.getElementById('kampusChart');
+                    if (ctxKampus) {
+                        const kampusLabels  = @json($kampusChartLabels ?? []);
+                        const kampusSedang  = @json($kampusSedangData ?? []);
+                        const kampusSelesai = @json($kampusSelesaiData ?? []);
+
+                        new Chart(ctxKampus, {
+                            type: 'bar',
+                            data: {
+                                labels: kampusLabels,
+                                datasets: [
+                                    {
+                                        label: 'Sedang Magang',
+                                        data: kampusSedang,
+                                        backgroundColor: 'rgba(74, 222, 128, 0.75)',
+                                        borderColor: 'rgba(74, 222, 128, 1)',
+                                        borderWidth: 1,
+                                        borderRadius: 4,
+                                    },
+                                    {
+                                        label: 'Selesai Magang',
+                                        data: kampusSelesai,
+                                        backgroundColor: 'rgba(96, 165, 250, 0.75)',
+                                        borderColor: 'rgba(96, 165, 250, 1)',
+                                        borderWidth: 1,
+                                        borderRadius: 4,
+                                    }
+                                ]
+                            },
+                            options: {
+                                indexAxis: 'y',
+                                responsive: true,
+                                maintainAspectRatio: false,
+                                plugins: {
+                                    legend: {
+                                        position: 'top',
+                                        labels: {
+                                            color: '#d1d5db',
+                                            boxWidth: 12,
+                                            padding: 12,
+                                            font: { size: 12 }
+                                        }
+                                    },
+                                    tooltip: {
+                                        callbacks: {
+                                            label: function(context) {
+                                                return ' ' + context.dataset.label + ': ' + context.raw + ' orang';
+                                            }
+                                        }
+                                    }
+                                },
+                                scales: {
+                                    x: {
+                                        beginAtZero: true,
+                                        ticks: {
+                                            stepSize: 1,
+                                            precision: 0,
+                                            color: '#9ca3af'
+                                        },
+                                        grid: {
+                                            color: 'rgba(255, 255, 255, 0.06)'
+                                        }
+                                    },
+                                    y: {
+                                        ticks: {
+                                            color: '#e5e7eb',
+                                            font: { size: 12 }
+                                        },
+                                        grid: {
+                                            display: false
+                                        }
+                                    }
+                                }
+                            }
+                        });
+                    }
                 });
             </script>
         @endif
@@ -215,6 +293,94 @@
                             Peserta Mulai Magang ({{ $selectedYear != 'all' ? $selectedYear : 'Semua Tahun' }})
                         </h3>
                         <canvas id="magangChart"></canvas>
+                    </div>
+                </div>
+
+                {{-- ======================================================== --}}
+                {{-- STATISTIK ASAL KAMPUS (SEDANG MAGANG VS SELESAI) --}}
+                {{-- ======================================================== --}}
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
+                    
+                    {{-- Kolom Kiri: Grafik Batang Asal Kampus --}}
+                    <div class="lg:col-span-7 bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-lg p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="flex items-center justify-between mb-4">
+                                <div>
+                                    <h3 class="claude-title text-xl text-white flex items-center gap-2">
+                                        <i class="fas fa-university text-[#e88968]"></i>
+                                        <span>Statistik Asal Kampus ({{ $selectedYear != 'all' ? $selectedYear : 'Semua Tahun' }})</span>
+                                    </h3>
+                                    <p class="text-xs text-gray-400 mt-0.5">
+                                        Perbandingan mahasiswa yang sedang aktif magang vs selesai per institusi
+                                    </p>
+                                </div>
+                            </div>
+
+                            @if(isset($kampusStats) && $kampusStats->count() > 0)
+                                <div class="h-80 w-full relative">
+                                    <canvas id="kampusChart"></canvas>
+                                </div>
+                            @else
+                                <div class="text-center py-16 text-gray-500">
+                                    <i class="fas fa-school text-3xl mb-2 text-gray-600"></i>
+                                    <p class="text-sm">Belum ada data magang untuk periode tahun ini.</p>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+
+                    {{-- Kolom Kanan: Rincian Daftar Institusi / Kampus --}}
+                    <div class="lg:col-span-5 bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-lg p-6 flex flex-col">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="claude-title text-lg text-white flex items-center gap-2">
+                                <i class="fas fa-list-ol text-[#e88968]"></i>
+                                <span>Rincian per Kampus</span>
+                            </h3>
+                            <span class="text-xs font-semibold text-[#e88968] bg-[#d97757]/15 border border-[#d97757]/30 px-2.5 py-0.5 rounded-full">
+                                {{ $kampusStats->count() ?? 0 }} Kampus
+                            </span>
+                        </div>
+
+                        @if(isset($kampusStats) && $kampusStats->count() > 0)
+                            <div class="overflow-y-auto max-h-80 space-y-3 pr-1">
+                                @foreach($kampusStats as $stat)
+                                    <div class="p-3.5 bg-[#1a1a1a]/70 rounded-xl border border-[#3a3a3a] hover:border-[#d97757]/40 transition-colors">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <div class="flex items-center gap-2.5 overflow-hidden">
+                                                <div class="w-6 h-6 rounded-md bg-[#d97757]/20 text-[#e88968] flex items-center justify-center text-xs font-bold flex-shrink-0">
+                                                    {{ $loop->iteration }}
+                                                </div>
+                                                <span class="text-sm font-semibold text-white truncate" title="{{ $stat->asal_kampus }}">
+                                                    {{ $stat->asal_kampus }}
+                                                </span>
+                                            </div>
+                                            <span class="text-xs font-bold text-gray-200 bg-[#2a2a2a] px-2.5 py-0.5 rounded-full border border-[#4a4a4a] whitespace-nowrap ml-2">
+                                                {{ $stat->total_peserta }} Total
+                                            </span>
+                                        </div>
+
+                                        {{-- Badges Status --}}
+                                        <div class="flex items-center gap-2 text-[11px] pt-2 border-t border-[#2a2a2a]">
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-green-500/20 text-green-400 border border-green-500/30">
+                                                <i class="fas fa-user-clock text-[10px]"></i> Sedang: <strong>{{ $stat->sedang_magang }}</strong>
+                                            </span>
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                                                <i class="fas fa-user-check text-[10px]"></i> Selesai: <strong>{{ $stat->selesai_magang }}</strong>
+                                            </span>
+                                            @if($stat->belum_mulai > 0)
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
+                                                    <i class="fas fa-hourglass-start text-[10px]"></i> Belum: <strong>{{ $stat->belum_mulai }}</strong>
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                @endforeach
+                            </div>
+                        @else
+                            <div class="text-center py-16 text-gray-500">
+                                <p class="text-sm">Tidak ada data untuk ditampilkan.</p>
+                            </div>
+                        @endif
                     </div>
                 </div>
 

@@ -127,6 +127,7 @@ graph TD
   * Ringkasan cepat jumlah lowongan aktif, berkas pending, dan peserta aktif.
   * Statistik agregat pendaftar (*Pending*, *Approved*, *Rejected*, *Conditional*).
   * Grafik tren pendaftaran dan peserta magang per bulan dalam tahun berjalan.
+  * **Statistik Asal Kampus:** Visualisasi perbandingan mahasiswa yang sedang aktif magang vs selesai per institusi/kampus dalam bentuk *horizontal grouped bar chart* dan daftar rincian institusi.
   * Kartu pemantauan peserta magang aktif saat ini dengan hitung mundur sisa hari (*remaining days*).
 * **FR-DASH-02 (User Dashboard):**
   * Section lowongan magang terbaru yang sedang dibuka di BPS Bantul dengan tombol aksi lamar langsung.

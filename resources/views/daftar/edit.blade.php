@@ -119,23 +119,23 @@
                             {{-- TANGGAL UI --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label for="tanggal_mulai" class="filter-label mb-2">Tanggal Mulai</label>
+                                    <label for="tanggal_mulai" class="filter-label mb-2">Tanggal Mulai <span class="text-red-400">*</span></label>
                                     <div class="date-input-wrapper">
                                         <input type="text" name="tanggal_mulai" id="tanggal_mulai" 
                                                class="filter-input cursor-pointer" 
                                                placeholder="Pilih Tanggal Mulai"
-                                               value="{{ old('tanggal_mulai', $pendaftaran->tanggal_mulai) }}" required readonly>
+                                               value="{{ old('tanggal_mulai', $pendaftaran->tanggal_mulai) }}">
                                         <i class="fas fa-calendar-alt date-input-icon"></i>
                                     </div>
                                     @error('tanggal_mulai') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
-                                    <label for="tanggal_selesai" class="filter-label mb-2">Tanggal Selesai</label>
+                                    <label for="tanggal_selesai" class="filter-label mb-2">Tanggal Selesai <span class="text-red-400">*</span></label>
                                     <div class="date-input-wrapper">
                                         <input type="text" name="tanggal_selesai" id="tanggal_selesai" 
                                                class="filter-input cursor-pointer" 
                                                placeholder="Pilih Tanggal Selesai"
-                                               value="{{ old('tanggal_selesai', $pendaftaran->tanggal_selesai) }}" required readonly>
+                                               value="{{ old('tanggal_selesai', $pendaftaran->tanggal_selesai) }}">
                                         <i class="fas fa-calendar-check date-input-icon"></i>
                                     </div>
                                     @error('tanggal_selesai') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
@@ -148,7 +148,7 @@
                         <div class="space-y-6">
                             {{-- Surat Permohonan (PDF) --}}
                             <div>
-                                <label for="surat_permohonan" class="filter-label mb-2">Surat Permohonan Magang (PDF)</label>
+                                <label for="surat_permohonan" class="filter-label mb-2">Ganti Surat Permohonan Magang (PDF)</label>
                                 @if($pendaftaran->surat_permohonan)
                                     <p class="text-xs text-green-400 mb-1 flex items-center gap-1">
                                         <i class="fas fa-check"></i> File saat ini tersimpan. Unggah hanya jika ingin mengganti.
@@ -157,14 +157,14 @@
                                 <input type="file" name="surat_permohonan" id="surat_permohonan" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
                                        accept=".pdf" data-max-size="2">
-                                <span class="text-xs text-gray-400 mt-1">Hanya file .pdf, maks 2MB.</span>
+                                <span class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah berkas saat ini. Maks 2MB.</span>
                                 <p class="text-red-400 text-xs mt-1 error-message hidden"></p> 
                                 @error('surat_permohonan') <span class="block text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
 
                             {{-- Surat Kampus (PDF) --}}
                             <div>
-                                <label for="surat_kampus" class="filter-label mb-2">Surat Keterangan/Rekomendasi Kampus (PDF)</label>
+                                <label for="surat_kampus" class="filter-label mb-2">Ganti Surat Keterangan/Rekomendasi Kampus (PDF)</label>
                                 @if($pendaftaran->surat_kampus)
                                     <p class="text-xs text-green-400 mb-1 flex items-center gap-1">
                                         <i class="fas fa-check"></i> File saat ini tersimpan. Unggah hanya jika ingin mengganti.
@@ -173,24 +173,24 @@
                                 <input type="file" name="surat_kampus" id="surat_kampus" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
                                        accept=".pdf" data-max-size="2">
-                                <span class="text-xs text-gray-400 mt-1">Surat resmi dari Universitas/Fakultas. Maks 2MB.</span>
+                                <span class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah berkas saat ini. Maks 2MB.</span>
                                 <p class="text-red-400 text-xs mt-1 error-message hidden"></p>
                                 @error('surat_kampus') <span class="block text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
                             
                             {{-- Pas Foto (JPG/PNG) --}}
                             <div>
-                                <label for="pas_foto" class="filter-label mb-2">Pas Foto (JPG/PNG)</label>
+                                <label for="pas_foto" class="filter-label mb-2">Ganti Pas Foto (JPG/PNG)</label>
                                 @if($pendaftaran->pas_foto)
                                     <div class="flex items-center gap-3 mb-2">
-                                        <img src="{{ asset('storage/' . $pendaftaran->pas_foto) }}" class="w-12 h-12 object-cover rounded-lg border border-[#4a4a4a]">
-                                        <span class="text-xs text-green-400">Foto tersimpan. Unggah file baru untuk mengganti.</span>
+                                        <img src="{{ asset('storage/' . $pendaftaran->pas_foto) }}" class="w-10 h-10 object-cover rounded-lg border border-[#4a4a4a]">
+                                        <span class="text-xs text-green-400">Foto saat ini tersimpan. Unggah baru jika ingin mengganti.</span>
                                     </div>
                                 @endif
                                 <input type="file" name="pas_foto" id="pas_foto" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
                                        accept="image/jpeg,image/png,image/jpg" data-max-size="1">
-                                <span class="text-xs text-gray-400 mt-1">Hanya file .jpg, .jpeg, .png, maks 1MB.</span>
+                                <span class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah berkas saat ini. Maks 1MB.</span>
                                 <p class="text-red-400 text-xs mt-1 error-message hidden"></p>
                                 @error('pas_foto') <span class="block text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
@@ -204,7 +204,7 @@
                                 <i class="fas fa-times"></i> Batal
                             </a>
                             <button type="submit" id="submitBtn" class="filter-btn filter-btn-primary w-full sm:w-auto">
-                                <i class="fas fa-save"></i> Perbarui & Kirim Ulang
+                                <i class="fas fa-save"></i> <span>Perbarui & Kirim Ulang</span>
                             </button>
                         </div>
                     </div>
@@ -227,7 +227,7 @@
                 altInput: true,
                 altFormat: "j F Y",
                 minDate: "today",
-                disableMobile: "true",
+                disableMobile: true,
                 onChange: function(selectedDates, dateStr, instance) {
                     if (selectedDates[0]) {
                         pickerSelesai.set('minDate', selectedDates[0]);
@@ -241,7 +241,7 @@
                 altInput: true,
                 altFormat: "j F Y",
                 minDate: "today",
-                disableMobile: "true"
+                disableMobile: true
             };
 
             const pickerMulai = flatpickr("#tanggal_mulai", configMulai);
@@ -306,6 +306,32 @@
                         }
                     }
                 });
+            });
+
+            // Form Submit Handler
+            const form = document.getElementById('pendaftaranEditForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', function(e) {
+                const tglMulai = document.getElementById('tanggal_mulai').value;
+                const tglSelesai = document.getElementById('tanggal_selesai').value;
+
+                if (!tglMulai || !tglSelesai) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Tanggal Belum Lengkap',
+                        text: 'Silakan pilih Tanggal Mulai dan Tanggal Selesai magang terlebih dahulu.',
+                        confirmButtonColor: '#d97757',
+                        background: '#1f2937',
+                        color: '#fff'
+                    });
+                    return false;
+                }
+
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Memperbarui Berkas...</span>';
             });
         });
     </script>

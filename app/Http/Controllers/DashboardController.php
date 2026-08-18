@@ -101,6 +101,33 @@ class DashboardController extends Controller
                 return $user;
             });
 
+            // Statistik Kampus (Sedang Magang vs Selesai)
+            $nowDate = Carbon::now()->toDateString();
+            $kampusQuery = Magang::query();
+
+            if ($selectedYear != 'all') {
+                $kampusQuery->where(function($q) use ($selectedYear) {
+                    $q->whereYear('tanggal_mulai', $selectedYear)
+                      ->orWhereYear('tanggal_selesai', $selectedYear);
+                });
+            }
+
+            $kampusStats = (clone $kampusQuery)
+                ->select(
+                    'asal_kampus',
+                    DB::raw("SUM(CASE WHEN tanggal_mulai <= '{$nowDate}' AND tanggal_selesai >= '{$nowDate}' THEN 1 ELSE 0 END) as sedang_magang"),
+                    DB::raw("SUM(CASE WHEN tanggal_selesai < '{$nowDate}' THEN 1 ELSE 0 END) as selesai_magang"),
+                    DB::raw("SUM(CASE WHEN tanggal_mulai > '{$nowDate}' THEN 1 ELSE 0 END) as belum_mulai"),
+                    DB::raw("COUNT(*) as total_peserta")
+                )
+                ->groupBy('asal_kampus')
+                ->orderByDesc('total_peserta')
+                ->get();
+
+            $kampusChartLabels  = $kampusStats->pluck('asal_kampus')->toArray();
+            $kampusSedangData   = $kampusStats->pluck('sedang_magang')->map(fn($v) => (int)$v)->toArray();
+            $kampusSelesaiData  = $kampusStats->pluck('selesai_magang')->map(fn($v) => (int)$v)->toArray();
+
             $totalLowonganBuka = Lowongan::where('status', 'buka')->count();
 
             return view('dashboard', [
@@ -116,6 +143,10 @@ class DashboardController extends Controller
                 'activeUsers'            => $activeUsers,
                 'jsInitialYear'          => $jsInitialYear,
                 'totalLowonganBuka'      => $totalLowonganBuka,
+                'kampusStats'            => $kampusStats,
+                'kampusChartLabels'      => $kampusChartLabels,
+                'kampusSedangData'       => $kampusSedangData,
+                'kampusSelesaiData'      => $kampusSelesaiData,
             ]);
 
         // ===========================================

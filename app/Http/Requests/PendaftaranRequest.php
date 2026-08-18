@@ -31,9 +31,9 @@ class PendaftaranRequest extends FormRequest
             // Posisi Lowongan (Opsional)
             'lowongan_id'    => ['nullable', 'exists:lowongans,id'],
 
-            // 1. Regex hanya huruf dan spasi (No angka/simbol)
-            'nama_pendaftar' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
-            'asal_kampus'    => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            // 1. Regex nama dan asal kampus yang fleksibel (nama dengan tanda petik/titik, kampus dengan angka/simbol wajar)
+            'nama_pendaftar' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s\.,\'\-]+$/'],
+            'asal_kampus'    => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9\s\.,\(\)\'\"\/\-]+$/'],
             'prodi'          => ['required', 'string', 'max:255'],
 
             // 2. Tanggal Mulai: hari ini s.d. 7 bulan ke depan

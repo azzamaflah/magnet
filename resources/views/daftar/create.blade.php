@@ -131,23 +131,23 @@
                             {{-- TANGGAL UI --}}
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label for="tanggal_mulai" class="filter-label mb-2">Tanggal Mulai</label>
+                                    <label for="tanggal_mulai" class="filter-label mb-2">Tanggal Mulai <span class="text-red-400">*</span></label>
                                     <div class="date-input-wrapper">
                                         <input type="text" name="tanggal_mulai" id="tanggal_mulai" 
                                                class="filter-input cursor-pointer" 
                                                placeholder="Pilih Tanggal Mulai"
-                                               value="{{ old('tanggal_mulai') }}" required readonly>
+                                               value="{{ old('tanggal_mulai') }}">
                                         <i class="fas fa-calendar-alt date-input-icon"></i>
                                     </div>
                                     @error('tanggal_mulai') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                                 </div>
                                 <div>
-                                    <label for="tanggal_selesai" class="filter-label mb-2">Tanggal Selesai</label>
+                                    <label for="tanggal_selesai" class="filter-label mb-2">Tanggal Selesai <span class="text-red-400">*</span></label>
                                     <div class="date-input-wrapper">
                                         <input type="text" name="tanggal_selesai" id="tanggal_selesai" 
                                                class="filter-input cursor-pointer" 
                                                placeholder="Pilih Tanggal Selesai"
-                                               value="{{ old('tanggal_selesai') }}" required readonly>
+                                               value="{{ old('tanggal_selesai') }}">
                                         <i class="fas fa-calendar-check date-input-icon"></i>
                                     </div>
                                     @error('tanggal_selesai') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
@@ -160,7 +160,7 @@
                         <div class="space-y-6">
                             {{-- Surat Permohonan (PDF) --}}
                             <div>
-                                <label for="surat_permohonan" class="filter-label mb-2">Surat Permohonan Magang (PDF)</label>
+                                <label for="surat_permohonan" class="filter-label mb-2">Surat Permohonan Magang (PDF) <span class="text-red-400">*</span></label>
                                 <input type="file" name="surat_permohonan" id="surat_permohonan" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
                                        accept=".pdf" required data-max-size="2">
@@ -171,7 +171,7 @@
 
                             {{-- Surat Kampus (PDF) --}}
                             <div>
-                                <label for="surat_kampus" class="filter-label mb-2">Surat Keterangan/Rekomendasi Kampus (PDF)</label>
+                                <label for="surat_kampus" class="filter-label mb-2">Surat Keterangan/Rekomendasi Kampus (PDF) <span class="text-red-400">*</span></label>
                                 <input type="file" name="surat_kampus" id="surat_kampus" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
                                        accept=".pdf" required data-max-size="2">
@@ -182,7 +182,7 @@
                             
                             {{-- Pas Foto (JPG/PNG) --}}
                             <div>
-                                <label for="pas_foto" class="filter-label mb-2">Pas Foto (JPG/PNG)</label>
+                                <label for="pas_foto" class="filter-label mb-2">Pas Foto (JPG/PNG) <span class="text-red-400">*</span></label>
                                 <input type="file" name="pas_foto" id="pas_foto" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
                                        accept="image/jpeg,image/png,image/jpg" required data-max-size="1">
@@ -200,7 +200,7 @@
                                 <i class="fas fa-times"></i> Batal
                             </a>
                             <button type="submit" id="submitBtn" class="filter-btn filter-btn-primary w-full sm:w-auto">
-                                <i class="fas fa-paper-plane"></i> Kirim Pendaftaran
+                                <i class="fas fa-paper-plane"></i> <span>Kirim Pendaftaran</span>
                             </button>
                         </div>
                     </div>
@@ -224,7 +224,7 @@
                 altInput: true,
                 altFormat: "j F Y",
                 minDate: "today",
-                disableMobile: "true",
+                disableMobile: true,
                 onChange: function(selectedDates, dateStr, instance) {
                     if (selectedDates[0]) {
                         pickerSelesai.set('minDate', selectedDates[0]);
@@ -239,7 +239,7 @@
                 altInput: true,
                 altFormat: "j F Y",
                 minDate: "today",
-                disableMobile: "true"
+                disableMobile: true
             };
 
             const pickerMulai = flatpickr("#tanggal_mulai", configMulai);
@@ -305,6 +305,33 @@
                         }
                     }
                 });
+            });
+
+            // Form Submit Handler dengan Validasi Eksplisit & Indikator Loading
+            const form = document.getElementById('pendaftaranForm');
+            const submitBtn = document.getElementById('submitBtn');
+
+            form.addEventListener('submit', function(e) {
+                const tglMulai = document.getElementById('tanggal_mulai').value;
+                const tglSelesai = document.getElementById('tanggal_selesai').value;
+
+                if (!tglMulai || !tglSelesai) {
+                    e.preventDefault();
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Tanggal Belum Lengkap',
+                        text: 'Silakan pilih Tanggal Mulai dan Tanggal Selesai magang terlebih dahulu.',
+                        confirmButtonColor: '#d97757',
+                        background: '#1f2937',
+                        color: '#fff'
+                    });
+                    return false;
+                }
+
+                // Tampilkan status loading agar user tahu berkas sedang diupload
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i><span>Mengirim Berkas...</span>';
             });
         });
     </script>
