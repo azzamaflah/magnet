@@ -76,7 +76,7 @@
                                 </div>
 
                                 <div class="md:col-span-2">
-                                    <dt class="text-gray-400">Periode Magang</dt>
+                                    <dt class="text-gray-400">Rencana Periode Magang</dt>
                                     <dd class="text-white font-medium">
                                         {{ \Carbon\Carbon::parse($pendaftaran->tanggal_mulai)->format('d M Y') }} - 
                                         {{ \Carbon\Carbon::parse($pendaftaran->tanggal_selesai)->format('d M Y') }}

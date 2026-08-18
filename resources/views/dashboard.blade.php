@@ -41,53 +41,81 @@
             <script>
                 document.addEventListener('DOMContentLoaded', function () {
                     const pendaftaranLabels = @json($pendaftaranChartLabels);
-                    const pendaftaranData = @json($pendaftaranChartData);
-                    const magangData = @json($magangChartData);
-                    const statusData = @json($statusChartData);
+                    const pendaftaranData   = @json($pendaftaranChartData);
+                    const magangData        = @json($magangChartData);
+                    const statusData        = @json($statusChartData);
+                    const kampusLabels      = @json($kampusChartLabels ?? []);
+                    const kampusSedang      = @json($kampusSedangData ?? []);
+                    const kampusSelesai     = @json($kampusSelesaiData ?? []);
 
-                    Chart.defaults.color = '#9ca3af';
-                    Chart.defaults.borderColor = 'rgba(255, 255, 255, 0.1)';
+                    function isLightMode() {
+                        return document.documentElement.classList.contains('light-theme');
+                    }
+
+                    function applyChartTheme() {
+                        const light = isLightMode();
+                        Chart.defaults.color = light ? '#475569' : '#9ca3af';
+                        Chart.defaults.borderColor = light ? 'rgba(0, 0, 0, 0.06)' : 'rgba(255, 255, 255, 0.08)';
+                    }
+
+                    applyChartTheme();
+
+                    const charts = [];
 
                     // 1. GRAFIK PENDAFTARAN
                     const ctxPendaftaran = document.getElementById('pendaftaranChart');
                     if (ctxPendaftaran) {
-                        new Chart(ctxPendaftaran, {
+                        const c1 = new Chart(ctxPendaftaran, {
                             type: 'bar',
                             data: {
                                 labels: pendaftaranLabels,
                                 datasets: [{
                                     label: 'Jumlah Pendaftar',
                                     data: pendaftaranData,
-                                    backgroundColor: 'rgba(217, 119, 87, 0.6)',
+                                    backgroundColor: 'rgba(217, 119, 87, 0.75)',
                                     borderColor: 'rgba(217, 119, 87, 1)',
-                                    borderWidth: 1
+                                    borderWidth: 1,
+                                    borderRadius: 4,
                                 }]
-                            }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                            }, 
+                            options: { 
+                                responsive: true, 
+                                plugins: { legend: { display: false } }, 
+                                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } 
+                            }
                         });
+                        charts.push(c1);
                     }
 
                     // 2. GRAFIK STATUS
                     const ctxStatus = document.getElementById('statusChart');
                     if (ctxStatus) {
-                        new Chart(ctxStatus, {
+                        const c2 = new Chart(ctxStatus, {
                             type: 'doughnut',
                             data: {
                                 labels: ['Menunggu', 'Disetujui', 'Ditolak', 'Bersyarat'],
                                 datasets: [{
                                     label: 'Status Pendaftar',
                                     data: statusData,
-                                    backgroundColor: ['rgba(250, 204, 21, 0.7)', 'rgba(74, 222, 128, 0.7)', 'rgba(248, 113, 113, 0.7)', 'rgba(96, 165, 250, 0.7)'],
-                                    borderColor: '#3a3a3a',
+                                    backgroundColor: [
+                                        'rgba(245, 158, 11, 0.8)', 
+                                        'rgba(34, 197, 94, 0.8)', 
+                                        'rgba(239, 68, 68, 0.8)', 
+                                        'rgba(59, 130, 246, 0.8)'
+                                    ],
+                                    borderColor: isLightMode() ? '#ffffff' : '#3a3a3a',
                                     borderWidth: 2
                                 }]
-                            }, options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
+                            }, 
+                            options: { responsive: true, plugins: { legend: { position: 'bottom' } } }
                         });
+                        charts.push(c2);
                     }
 
                     // 3. GRAFIK MAGANG
                     const ctxMagang = document.getElementById('magangChart');
                     if (ctxMagang) {
-                        new Chart(ctxMagang, {
+                        const c3 = new Chart(ctxMagang, {
                             type: 'line',
                             data: {
                                 labels: pendaftaranLabels,
@@ -100,18 +128,20 @@
                                     fill: true,
                                     tension: 0.3
                                 }]
-                            }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
+                            }, 
+                            options: { 
+                                responsive: true, 
+                                plugins: { legend: { display: false } }, 
+                                scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } 
+                            }
                         });
+                        charts.push(c3);
                     }
 
                     // 4. GRAFIK KAMPUS (SEDANG MAGANG VS SELESAI)
                     const ctxKampus = document.getElementById('kampusChart');
                     if (ctxKampus) {
-                        const kampusLabels  = @json($kampusChartLabels ?? []);
-                        const kampusSedang  = @json($kampusSedangData ?? []);
-                        const kampusSelesai = @json($kampusSelesaiData ?? []);
-
-                        new Chart(ctxKampus, {
+                        const c4 = new Chart(ctxKampus, {
                             type: 'bar',
                             data: {
                                 labels: kampusLabels,
@@ -119,16 +149,16 @@
                                     {
                                         label: 'Sedang Magang',
                                         data: kampusSedang,
-                                        backgroundColor: 'rgba(74, 222, 128, 0.75)',
-                                        borderColor: 'rgba(74, 222, 128, 1)',
+                                        backgroundColor: 'rgba(34, 197, 94, 0.75)',
+                                        borderColor: 'rgba(34, 197, 94, 1)',
                                         borderWidth: 1,
                                         borderRadius: 4,
                                     },
                                     {
                                         label: 'Selesai Magang',
                                         data: kampusSelesai,
-                                        backgroundColor: 'rgba(96, 165, 250, 0.75)',
-                                        borderColor: 'rgba(96, 165, 250, 1)',
+                                        backgroundColor: 'rgba(59, 130, 246, 0.75)',
+                                        borderColor: 'rgba(59, 130, 246, 1)',
                                         borderWidth: 1,
                                         borderRadius: 4,
                                     }
@@ -142,7 +172,6 @@
                                     legend: {
                                         position: 'top',
                                         labels: {
-                                            color: '#d1d5db',
                                             boxWidth: 12,
                                             padding: 12,
                                             font: { size: 12 }
@@ -161,16 +190,11 @@
                                         beginAtZero: true,
                                         ticks: {
                                             stepSize: 1,
-                                            precision: 0,
-                                            color: '#9ca3af'
-                                        },
-                                        grid: {
-                                            color: 'rgba(255, 255, 255, 0.06)'
+                                            precision: 0
                                         }
                                     },
                                     y: {
                                         ticks: {
-                                            color: '#e5e7eb',
                                             font: { size: 12 }
                                         },
                                         grid: {
@@ -180,7 +204,21 @@
                                 }
                             }
                         });
+                        charts.push(c4);
                     }
+
+                    // Re-render charts on theme switch
+                    window.addEventListener('magnet-theme-changed', function(e) {
+                        applyChartTheme();
+                        charts.forEach(chart => {
+                            if (chart) {
+                                if (chart.config.type === 'doughnut') {
+                                    chart.data.datasets[0].borderColor = (e.detail.theme === 'light') ? '#ffffff' : '#3a3a3a';
+                                }
+                                chart.update();
+                            }
+                        });
+                    });
                 });
             </script>
         @endif

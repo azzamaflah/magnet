@@ -7,14 +7,67 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MAGNET</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        magnet: {
+                            50: '#fdf7f5',
+                            100: '#faeee9',
+                            500: '#d97757',
+                            600: '#c4623e',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <link rel="icon" type="image/png" href="{{ asset('images/Magnet.png') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <script>
+        // Init theme instantly before render (Zero-FOUC)
+        (function() {
+            const savedTheme = localStorage.getItem('magnet_theme') || 'dark';
+            if (savedTheme === 'light') {
+                document.documentElement.classList.add('light-theme');
+                document.documentElement.classList.remove('dark-theme', 'dark');
+            } else {
+                document.documentElement.classList.add('dark-theme', 'dark');
+                document.documentElement.classList.remove('light-theme');
+            }
+        })();
+
         if (localStorage.getItem('_x_expanded') === 'false') {
             document.documentElement.classList.add('sidebar-collapsed-on-load');
         }
+
+        // Global theme toggle helper
+        window.toggleMagnetTheme = function() {
+            const html = document.documentElement;
+            html.classList.add('theme-transitioning');
+
+            const isLight = html.classList.contains('light-theme');
+            if (isLight) {
+                html.classList.remove('light-theme');
+                html.classList.add('dark-theme', 'dark');
+                localStorage.setItem('magnet_theme', 'dark');
+            } else {
+                html.classList.remove('dark-theme', 'dark');
+                html.classList.add('light-theme');
+                localStorage.setItem('magnet_theme', 'light');
+            }
+            window.dispatchEvent(new CustomEvent('magnet-theme-changed', { 
+                detail: { theme: isLight ? 'dark' : 'light' } 
+            }));
+
+            setTimeout(() => {
+                html.classList.remove('theme-transitioning');
+            }, 260);
+        };
     </script>
 
     <style>
@@ -1363,6 +1416,258 @@
         font-size: 0.65rem !important; /* Kecilkan teks hari */
     }
 }
+
+/* ========================================================
+   LIGHT THEME STYLING SYSTEM (MODERN LIGHT MODE)
+   ======================================================== */
+html.light-theme {
+    background-color: #f8fafc !important;
+}
+
+html.light-theme body {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #fef6f3 100%) !important;
+    color: #1e293b !important;
+}
+
+/* Light Theme Orbs */
+html.light-theme .bg-orb {
+    opacity: 0.08 !important;
+}
+
+/* Light Theme: Text utilities */
+html.light-theme .text-white {
+    color: #0f172a !important;
+}
+
+html.light-theme .text-gray-200 {
+    color: #1e293b !important;
+}
+
+html.light-theme .text-gray-300 {
+    color: #334155 !important;
+}
+
+html.light-theme .text-gray-400 {
+    color: #64748b !important;
+}
+
+html.light-theme .text-gray-500 {
+    color: #94a3b8 !important;
+}
+
+/* Light Theme: Cards & Glassmorphism */
+html.light-theme .bg-\[\#2a2a2a\]\/60,
+html.light-theme .bg-\[\#2a2a2a\] {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.05), 0 2px 6px -1px rgba(0, 0, 0, 0.02) !important;
+}
+
+html.light-theme .bg-\[\#1a1a1a\]\/20,
+html.light-theme .bg-\[\#1a1a1a\]\/50,
+html.light-theme .bg-\[\#1a1a1a\]\/60,
+html.light-theme .bg-\[\#1a1a1a\]\/70,
+html.light-theme .bg-\[\#1a1a1a\]\/80,
+html.light-theme .bg-\[\#1a1a1a\] {
+    background-color: #f8fafc !important;
+    border-color: #e2e8f0 !important;
+}
+
+html.light-theme .bg-\[\#3a3a3a\] {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-theme .border-\[\#3a3a3a\],
+html.light-theme .border-\[\#4a4a4a\] {
+    border-color: #e2e8f0 !important;
+}
+
+/* Light Theme: Sidebar */
+html.light-theme aside {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 2px 0 16px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-theme aside .text-gray-300 {
+    color: #475569 !important;
+}
+
+html.light-theme aside a:hover {
+    background-color: rgba(217, 119, 87, 0.08) !important;
+    color: #d97757 !important;
+}
+
+/* Light Theme: Mobile Header */
+html.light-theme header.lg\:hidden {
+    background-color: rgba(255, 255, 255, 0.9) !important;
+    border-color: #e2e8f0 !important;
+}
+
+/* Light Theme: Filter form & inputs */
+html.light-theme .filter-container {
+    background-color: rgba(255, 255, 255, 0.95) !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04) !important;
+}
+
+html.light-theme input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+html.light-theme select,
+html.light-theme textarea,
+html.light-theme .filter-input,
+html.light-theme .filter-select {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+
+html.light-theme input:focus,
+html.light-theme select:focus,
+html.light-theme textarea:focus,
+html.light-theme .filter-input:focus,
+html.light-theme .filter-select:focus {
+    background-color: #ffffff !important;
+    border-color: #d97757 !important;
+    box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.15) !important;
+}
+
+html.light-theme input::placeholder,
+html.light-theme textarea::placeholder {
+    color: #94a3b8 !important;
+}
+
+html.light-theme select option {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+}
+
+html.light-theme .filter-label {
+    color: #475569 !important;
+}
+
+html.light-theme .filter-btn-secondary {
+    background-color: #f1f5f9 !important;
+    border-color: #cbd5e1 !important;
+    color: #475569 !important;
+}
+
+html.light-theme .filter-btn-secondary:hover {
+    background-color: #e2e8f0 !important;
+    color: #1e293b !important;
+}
+
+/* Light Theme: Modal & Dialogs */
+html.light-theme .modal-content,
+html.light-theme [role="dialog"] > div {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #1e293b !important;
+}
+
+/* Light Theme: Claude Button */
+html.light-theme .claude-button {
+    box-shadow: 0 4px 12px rgba(217, 119, 87, 0.25) !important;
+}
+
+/* Light Theme: Table Styles */
+html.light-theme table thead {
+    background-color: #f1f5f9 !important;
+}
+
+html.light-theme table thead th {
+    color: #475569 !important;
+    border-color: #e2e8f0 !important;
+}
+
+html.light-theme table tbody tr {
+    border-color: #f1f5f9 !important;
+}
+
+html.light-theme table tbody tr:hover {
+    background-color: rgba(217, 119, 87, 0.04) !important;
+}
+
+/* Light Theme: Status Badges */
+html.light-theme .bg-yellow-900\/50,
+html.light-theme .bg-yellow-900 {
+    background-color: #fef3c7 !important;
+    color: #92400e !important;
+    border-color: #fde68a !important;
+}
+
+html.light-theme .bg-green-900\/50,
+html.light-theme .bg-green-900 {
+    background-color: #dcfce7 !important;
+    color: #166534 !important;
+    border-color: #bbf7d0 !important;
+}
+
+html.light-theme .bg-blue-900\/50,
+html.light-theme .bg-blue-900 {
+    background-color: #dbeafe !important;
+    color: #1e40af !important;
+    border-color: #bfdbfe !important;
+}
+
+html.light-theme .bg-red-900\/50,
+html.light-theme .bg-red-900 {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    border-color: #fecaca !important;
+}
+
+/* Light Theme: Flatpickr Calendar */
+html.light-theme .flatpickr-calendar {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1) !important;
+}
+
+html.light-theme .flatpickr-months .flatpickr-month {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    fill: #0f172a !important;
+}
+
+html.light-theme .flatpickr-current-month .flatpickr-monthDropdown-months {
+    background-color: #ffffff !important;
+    color: #0f172a !important;
+}
+
+html.light-theme .flatpickr-day {
+    color: #334155 !important;
+}
+
+html.light-theme .flatpickr-day:hover {
+    background: #f1f5f9 !important;
+    border-color: #f1f5f9 !important;
+}
+
+html.light-theme .flatpickr-day.selected,
+html.light-theme .flatpickr-day.startRange,
+html.light-theme .flatpickr-day.endRange {
+    background: #d97757 !important;
+    color: #ffffff !important;
+    border-color: #d97757 !important;
+}
+
+html.light-theme .flatpickr-day.flatpickr-disabled {
+    color: #cbd5e1 !important;
+}
+
+/* ========================================================
+   SYNCHRONIZED THEME TRANSITION (NO DELAY BETWEEN SECTIONS)
+   ======================================================== */
+html.theme-transitioning,
+html.theme-transitioning *,
+html.theme-transitioning *::before,
+html.theme-transitioning *::after {
+    transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease, fill 0.25s ease, box-shadow 0.25s ease !important;
+    transition-delay: 0s !important;
+}
+
     </style>
 </head>
 
@@ -1372,21 +1677,31 @@
     :class="{ 'overflow-hidden': mobileOpen }">
 
     {{-- ✅ HEADER KHUSUS MOBILE (LG:HIDDEN) --}}
-    {{-- Urutan diubah: Tombol dulu, baru Judul. justify-between -> justify-start gap-4 --}}
     <header x-cloak
-        class="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-start gap-4 h-16 px-6 bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-[#3a3a3a]">
-        <button @click="mobileOpen = true" class="text-gray-300 p-2 -ml-2 rounded-lg hover:bg-white/5 hover:text-white">
-            <i class="fas fa-bars w-5 text-center"></i>
+        class="lg:hidden fixed top-0 left-0 right-0 z-30 flex items-center justify-between h-16 px-6 bg-[#1a1a1a]/80 backdrop-blur-sm border-b border-[#3a3a3a]">
+        <div class="flex items-center gap-4">
+            <button @click="mobileOpen = true" class="text-gray-300 p-2 -ml-2 rounded-lg hover:bg-white/5 hover:text-white">
+                <i class="fas fa-bars w-5 text-center"></i>
+            </button>
+            <h1 class="claude-title text-xl text-white font-semibold">
+                MagNet
+            </h1>
+        </div>
+
+        {{-- Tombol Toggle Tema Mobile --}}
+        <button onclick="window.toggleMagnetTheme()" 
+                class="p-2 rounded-lg text-gray-300 hover:text-[#d97757] hover:bg-white/5 transition-colors text-sm"
+                title="Ganti Tema">
+            <span class="dark-only hidden"><i class="fas fa-sun text-yellow-400"></i></span>
+            <span class="light-only hidden"><i class="fas fa-moon text-blue-500"></i></span>
+            <i class="fas fa-circle-half-stroke"></i>
         </button>
-        <h1 class="claude-title text-xl text-white font-semibold">
-            MagNet
-        </h1>
     </header>
 
     <div class="flex">
         @include('layouts.sidebar')
 
-        <main class="flex-1 transition-all duration-500 ease-in-out pt-16 lg:pt-0"
+        <main class="flex-1 transition-[padding] duration-300 ease-in-out pt-16 lg:pt-0"
             :class="expanded ? 'lg:pl-64' : 'lg:pl-20'">
 
             {{ $slot }}

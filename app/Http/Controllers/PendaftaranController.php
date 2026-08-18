@@ -7,6 +7,7 @@ use App\Mail\PendaftaranStatusMail;
 use App\Models\Lowongan;
 use App\Models\Magang;
 use App\Models\Pendaftaran;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -82,7 +83,11 @@ class PendaftaranController extends Controller
         $lowongans = Lowongan::where('status', 'buka')->get();
         $selectedLowonganId = $request->query('lowongan_id');
 
-        return view('daftar.create', compact('lowongans', 'selectedLowonganId'));
+        $setting = Setting::where('key', 'min_durasi_magang')->first();
+        $minDurasi  = (int) ($setting->value ?? 3);
+        $tipeDurasi = $setting->type ?? 'bulan';
+
+        return view('daftar.create', compact('lowongans', 'selectedLowonganId', 'minDurasi', 'tipeDurasi'));
     }
 
     /**
@@ -136,7 +141,11 @@ class PendaftaranController extends Controller
 
         $lowongans = Lowongan::where('status', 'buka')->get();
 
-        return view('daftar.edit', compact('pendaftaran', 'lowongans'));
+        $setting = Setting::where('key', 'min_durasi_magang')->first();
+        $minDurasi  = (int) ($setting->value ?? 3);
+        $tipeDurasi = $setting->type ?? 'bulan';
+
+        return view('daftar.edit', compact('pendaftaran', 'lowongans', 'minDurasi', 'tipeDurasi'));
     }
 
     /**

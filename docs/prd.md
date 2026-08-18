@@ -153,7 +153,7 @@ graph TD
 * **FR-CHATBOT-04 (Quick Reply):** Tersedia tombol *quick reply* untuk pertanyaan umum paling sering agar pengguna tidak perlu mengetik manual (contoh: "Cara Daftar", "Syarat Dokumen", "Info Divisi", "Status Pendaftaran").
 * **FR-CHATBOT-05 (Keamanan API):** Request ke Gemini API dilakukan melalui **Laravel Controller** (backend) sehingga API key tidak pernah terekspos ke sisi browser/client.
 * **FR-CHATBOT-06 (Batasan Topik):** Jika pertanyaan di luar konteks magang BPS Bantul, MagBot mengarahkan pengguna dengan sopan untuk menghubungi admin atau mengunjungi halaman yang relevan.
-* **FR-CHATBOT-07 (Riwayat Percakapan):** Riwayat pesan dipertahankan selama sesi browser aktif (disimpan di `sessionStorage`) sehingga percakapan tidak hilang saat pengguna berpindah halaman.
+* **FR-CHATBOT-07 (Siklus Riwayat & Reset Percakapan):** Riwayat pesan diikat secara unik pada *User ID* dan *Laravel Session ID* saat ini. Setiap kali pengguna baru login (atau login ulang setelah logout), riwayat chat otomatis direset ke kondisi awal (menampilkan pesan sambutan dan tombol *quick replies*). Pengguna juga dapat mereset percakapan secara manual kapan saja melalui tombol reset (🔄) di header MagBot.
 
 ---
 
@@ -170,8 +170,9 @@ graph TD
 * **Arsitektur Kode (Code Cleanliness & Maintainability):**
   * Menerapkan pemisahan validasi request ke dalam class FormRequest (`PendaftaranRequest`, `MagangRequest`, `LowonganRequest`).
   * Penerapan arsitektur MVC bersih (*Lean Controllers*).
-* **Kompatibilitas & Tampilan (Usability):**
-  * Antarmuka responsif (Mobile-first) dengan tema modern/dark mode menggunakan Tailwind CSS dan Alpine.js.
+* **Kompatibilitas & Tampilan (Usability & Theming):**
+  * Antarmuka responsif (*Mobile-first*) menggunakan Tailwind CSS dan Alpine.js.
+  * **Dukungan Tema Ganda (Dark Mode & Light Mode):** Pengguna dapat beralih antara Mode Gelap (default) dan Mode Terang kapan saja melalui tombol toggle di sidebar atau header mobile. Preferensi tersimpan di `localStorage` dengan penanganan *zero-FOUC* (bebas kedipan).
 
 ---
 

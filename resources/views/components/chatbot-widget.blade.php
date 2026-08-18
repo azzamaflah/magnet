@@ -121,21 +121,23 @@
         50% { opacity: 0.4; }
     }
 
-    #magbot-close-btn {
-        margin-left: auto;
+    .magbot-icon-btn {
         background: none;
         border: none;
         color: #6b7280;
         cursor: pointer;
-        padding: 4px 8px;
+        padding: 4px 7px;
         border-radius: 6px;
         font-size: 0.85rem;
         transition: color 0.15s, background 0.15s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
     }
 
-    #magbot-close-btn:hover {
+    .magbot-icon-btn:hover {
         color: white;
-        background: rgba(255,255,255,0.05);
+        background: rgba(255,255,255,0.08);
     }
 
     /* Messages Area */
@@ -343,6 +345,56 @@
     .magbot-msg-bubble li { margin-bottom: 2px; }
     .magbot-msg-bubble p { margin-bottom: 4px; }
     .magbot-msg-bubble code { background: rgba(255,255,255,0.1); padding: 1px 4px; border-radius: 3px; font-family: monospace; font-size: 0.75rem; }
+
+    /* Light Theme: MagBot Adjustments */
+    html.light-theme #magbot-window {
+        background: #ffffff;
+        border-color: #e2e8f0;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15), 0 0 0 1px rgba(217, 119, 87, 0.1);
+    }
+
+    html.light-theme #magbot-header {
+        background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+        border-bottom: 1px solid #e2e8f0;
+    }
+
+    html.light-theme .magbot-header-info .name {
+        color: #0f172a;
+    }
+
+    html.light-theme .magbot-msg.bot .magbot-msg-bubble {
+        background: #f1f5f9;
+        border-color: #e2e8f0;
+        color: #1e293b;
+    }
+
+    html.light-theme .magbot-msg-bubble strong {
+        color: #0f172a;
+    }
+
+    html.light-theme #magbot-input-area {
+        background: #f8fafc;
+        border-top: 1px solid #e2e8f0;
+    }
+
+    html.light-theme #magbot-input {
+        background: #ffffff;
+        border-color: #cbd5e1;
+        color: #0f172a;
+    }
+
+    html.light-theme #magbot-input::placeholder {
+        color: #94a3b8;
+    }
+
+    html.light-theme .magbot-icon-btn {
+        color: #94a3b8;
+    }
+
+    html.light-theme .magbot-icon-btn:hover {
+        color: #0f172a;
+        background: rgba(0,0,0,0.06);
+    }
 </style>
 
 {{-- Widget HTML --}}
@@ -363,9 +415,14 @@
                     Asisten Virtual BPS Bantul
                 </div>
             </div>
-            <button id="magbot-close-btn" title="Tutup">
-                <i class="fas fa-times"></i>
-            </button>
+            <div style="margin-left: auto; display: flex; align-items: center; gap: 4px;">
+                <button id="magbot-reset-btn" class="magbot-icon-btn" title="Mulai Percakapan Baru / Reset Chat">
+                    <i class="fas fa-rotate-right"></i>
+                </button>
+                <button id="magbot-close-btn" class="magbot-icon-btn" title="Tutup">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
         </div>
 
         {{-- Messages --}}
@@ -410,11 +467,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const csrfToken   = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
     const chatRoute   = '{{ route("chatbot.message") }}';
     const userInitial = '{{ substr(auth()->user()->name, 0, 1) }}';
+    const currentSessionKey = 'magbot_history_' + '{{ auth()->id() }}_' + '{{ session()->getId() }}';
 
     // DOM refs
     const toggleBtn    = document.getElementById('magbot-toggle');
     const window_      = document.getElementById('magbot-window');
     const closeBtn     = document.getElementById('magbot-close-btn');
+    const resetBtn     = document.getElementById('magbot-reset-btn');
     const messages     = document.getElementById('magbot-messages');
     const input        = document.getElementById('magbot-input');
     const sendBtn      = document.getElementById('magbot-send-btn');
@@ -425,9 +484,19 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if (!toggleBtn || !window_) return;
 
-    let isOpen      = false;
-    let isTyping    = false;
-    let history     = [];
+    let isOpen   = false;
+    let isTyping = false;
+    let history  = [];
+
+    // Bersihkan riwayat chat sesi lama/user lain di browser ini
+    try {
+        for (let i = sessionStorage.length - 1; i >= 0; i--) {
+            const k = sessionStorage.key(i);
+            if (k && (k === 'magbot_history' || (k.startsWith('magbot_history_') && k !== currentSessionKey))) {
+                sessionStorage.removeItem(k);
+            }
+        }
+    } catch(e) {}
 
     // === Utility: Simple Markdown Parser ===
     function parseMarkdown(text) {
@@ -476,6 +545,41 @@ document.addEventListener('DOMContentLoaded', function () {
         e.preventDefault();
         e.stopPropagation();
         closeChat();
+    });
+
+    // === Reset Chat function ===
+    function resetChat() {
+        history = [];
+        try {
+            sessionStorage.removeItem(currentSessionKey);
+        } catch(e) {}
+
+        if (messages) {
+            messages.innerHTML = `
+                <div class="magbot-msg bot">
+                    <div class="magbot-msg-avatar bot"><i class="fas fa-robot" style="font-size:0.65rem"></i></div>
+                    <div class="magbot-msg-bubble">
+                        Halo! 👋 Saya <strong>MagBot</strong>, asisten virtual BPS Kabupaten Bantul.<br><br>
+                        Saya siap membantu kamu seputar <strong>pendaftaran magang</strong>, <strong>informasi divisi</strong>, dan <strong>panduan aplikasi MagNet</strong>. 😊
+                    </div>
+                </div>
+            `;
+        }
+
+        const qrContainer = document.getElementById('magbot-quick-replies');
+        if (qrContainer) qrContainer.style.display = 'flex';
+
+        if (input) {
+            input.value = '';
+            input.style.height = '38px';
+            input.focus();
+        }
+    }
+
+    resetBtn?.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        resetChat();
     });
 
     // === Add Message Bubble ===
@@ -624,14 +728,19 @@ document.addEventListener('DOMContentLoaded', function () {
     // === Session History ===
     function saveHistory() {
         try {
-            sessionStorage.setItem('magbot_history', JSON.stringify(history.slice(-20)));
+            sessionStorage.setItem(currentSessionKey, JSON.stringify(history.slice(-20)));
         } catch(e) {}
     }
 
     function loadHistory() {
         try {
-            const saved = sessionStorage.getItem('magbot_history');
-            if (!saved) return;
+            const saved = sessionStorage.getItem(currentSessionKey);
+            if (!saved) {
+                // Tampilan default untuk login baru: pastikan quick reply tampil
+                const qrContainer = document.getElementById('magbot-quick-replies');
+                if (qrContainer) qrContainer.style.display = 'flex';
+                return;
+            }
             const parsed = JSON.parse(saved);
             if (!Array.isArray(parsed) || parsed.length === 0) return;
 

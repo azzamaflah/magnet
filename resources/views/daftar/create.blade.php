@@ -128,30 +128,49 @@
                                 @error('prodi') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
 
-                            {{-- TANGGAL UI --}}
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label for="tanggal_mulai" class="filter-label mb-2">Tanggal Mulai <span class="text-red-400">*</span></label>
-                                    <div class="date-input-wrapper">
-                                        <input type="text" name="tanggal_mulai" id="tanggal_mulai" 
-                                               class="filter-input cursor-pointer" 
-                                               placeholder="Pilih Tanggal Mulai"
-                                               value="{{ old('tanggal_mulai') }}">
-                                        <i class="fas fa-calendar-alt date-input-icon"></i>
-                                    </div>
-                                    @error('tanggal_mulai') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
+                            {{-- RENCANA PERIODE MAGANG --}}
+                            <div class="border-t border-[#3a3a3a] pt-4 mt-2">
+                                <div class="flex items-center justify-between mb-3">
+                                    <label class="filter-label flex items-center gap-2 font-semibold text-white">
+                                        <i class="fas fa-calendar-alt text-[#e88968]"></i>
+                                        <span>Rencana Periode Magang</span>
+                                    </label>
+                                    <span class="text-[11px] text-gray-400">
+                                        Min. {{ $minDurasi ?? 3 }} {{ $tipeDurasi ?? 'bulan' }}
+                                    </span>
                                 </div>
-                                <div>
-                                    <label for="tanggal_selesai" class="filter-label mb-2">Tanggal Selesai <span class="text-red-400">*</span></label>
-                                    <div class="date-input-wrapper">
-                                        <input type="text" name="tanggal_selesai" id="tanggal_selesai" 
-                                               class="filter-input cursor-pointer" 
-                                               placeholder="Pilih Tanggal Selesai"
-                                               value="{{ old('tanggal_selesai') }}">
-                                        <i class="fas fa-calendar-check date-input-icon"></i>
+
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="tanggal_mulai" class="block text-xs text-gray-300 mb-1.5 font-medium">
+                                            Rencana Tanggal Mulai <span class="text-red-400">*</span>
+                                        </label>
+                                        <div class="date-input-wrapper">
+                                            <input type="text" name="tanggal_mulai" id="tanggal_mulai" 
+                                                   class="filter-input cursor-pointer" 
+                                                   placeholder="Pilih Tanggal Mulai"
+                                                   value="{{ old('tanggal_mulai') }}">
+                                            <i class="fas fa-calendar-alt date-input-icon"></i>
+                                        </div>
+                                        @error('tanggal_mulai') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
                                     </div>
-                                    @error('tanggal_selesai') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
+                                    <div>
+                                        <label for="tanggal_selesai" class="block text-xs text-gray-300 mb-1.5 font-medium">
+                                            Rencana Tanggal Selesai <span class="text-red-400">*</span>
+                                        </label>
+                                        <div class="date-input-wrapper">
+                                            <input type="text" name="tanggal_selesai" id="tanggal_selesai" 
+                                                   class="filter-input cursor-pointer" 
+                                                   placeholder="Pilih Tanggal Selesai"
+                                                   value="{{ old('tanggal_selesai') }}">
+                                            <i class="fas fa-calendar-check date-input-icon"></i>
+                                        </div>
+                                        @error('tanggal_selesai') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
+                                    </div>
                                 </div>
+                                <span class="text-xs text-gray-400 mt-2 block">
+                                    <i class="fas fa-info-circle text-[#e88968] mr-1"></i> Tentukan perkiraan rentang waktu pelaksanaan magang yang diajukan.
+                                </span>
                             </div>
 
                         </div>
