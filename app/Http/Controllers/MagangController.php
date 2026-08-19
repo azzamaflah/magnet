@@ -16,7 +16,26 @@ class MagangController extends Controller
      */
     public function index(Request $request)
     {
+        $user = auth()->user();
         $query = Magang::query();
+
+        // Jika bukan Admin, hanya tampilkan data magang yang TIDAK disembunyikan (atau milik user sendiri)
+        if (!$user || !$user->isAdmin()) {
+            $query->where(function ($q) use ($user) {
+                $q->where('is_hidden', false);
+                if ($user) {
+                    $q->orWhere('user_id', $user->id);
+                }
+            });
+        } else {
+            // Filter visibilitas untuk Admin
+            $selectedVisibility = $request->input('visibility', 'all');
+            if ($selectedVisibility === 'visible') {
+                $query->where('is_hidden', false);
+            } elseif ($selectedVisibility === 'hidden') {
+                $query->where('is_hidden', true);
+            }
+        }
 
         $availableYears = (clone $query)
             ->selectRaw('YEAR(tanggal_mulai) as year')
@@ -27,6 +46,7 @@ class MagangController extends Controller
             ->filter();
 
         $selectedYear = $request->input('year', 'all');
+        $selectedVisibility = $request->input('visibility', 'all');
 
         if ($request->filled('search')) {
             $query->where('nama', 'like', '%' . $request->search . '%');
@@ -48,7 +68,7 @@ class MagangController extends Controller
 
         $magangs = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 
-        return view('magang.index', compact('magangs', 'kampusList', 'availableYears', 'selectedYear'));
+        return view('magang.index', compact('magangs', 'kampusList', 'availableYears', 'selectedYear', 'selectedVisibility'));
     }
 
     /**
@@ -70,6 +90,7 @@ class MagangController extends Controller
         $validated['nama']        = strip_tags($validated['nama']);
         $validated['asal_kampus'] = strip_tags($validated['asal_kampus']);
         $validated['prodi']       = strip_tags($validated['prodi']);
+        $validated['is_hidden']   = $request->boolean('is_hidden');
 
         // Handle upload foto
         if ($request->hasFile('foto')) {
@@ -86,6 +107,11 @@ class MagangController extends Controller
      */
     public function show(Magang $magang)
     {
+        // Jika data disembunyikan dan bukan admin / bukan pemilik data
+        if ($magang->is_hidden && (!auth()->check() || (!auth()->user()->isAdmin() && $magang->user_id !== auth()->id()))) {
+            abort(404, 'Data magang tidak ditemukan atau sedang disembunyikan oleh Administrator.');
+        }
+
         return view('magang.show', compact('magang'));
     }
 
@@ -113,6 +139,10 @@ class MagangController extends Controller
         $validated['asal_kampus'] = strip_tags($validated['asal_kampus']);
         $validated['prodi']       = strip_tags($validated['prodi']);
 
+        if (auth()->user()->isAdmin()) {
+            $validated['is_hidden'] = $request->boolean('is_hidden');
+        }
+
         DB::transaction(function () use ($request, $magang, &$validated) {
             if ($request->hasFile('foto')) {
                 $oldMagangPhoto = $magang->foto;
@@ -139,6 +169,33 @@ class MagangController extends Controller
         });
 
         return redirect()->route('magang.show', $magang)->with('success', 'Data dan Foto berhasil diperbarui di semua data!');
+    }
+
+    /**
+     * Toggle visibility (hide/unhide) of a magang participant (Admin only).
+     */
+    public function toggleVisibility(Magang $magang)
+    {
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $magang->is_hidden = !$magang->is_hidden;
+        $magang->save();
+
+        $statusMsg = $magang->is_hidden
+            ? "Data peserta {$magang->nama} berhasil disembunyikan dari publik."
+            : "Data peserta {$magang->nama} berhasil ditampilkan ke publik.";
+
+        if (request()->wantsJson()) {
+            return response()->json([
+                'success'   => true,
+                'is_hidden' => $magang->is_hidden,
+                'message'   => $statusMsg,
+            ]);
+        }
+
+        return redirect()->back()->with('success', $statusMsg);
     }
 
     /**

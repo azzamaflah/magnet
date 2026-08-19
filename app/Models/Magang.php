@@ -29,11 +29,13 @@ class Magang extends Model
         'link_pekerjaan',
         'periode_bulan',
         'status',
+        'is_hidden',
     ];
 
     protected $casts = [
         'tanggal_mulai'   => 'date',
         'tanggal_selesai' => 'date',
+        'is_hidden'       => 'boolean',
     ];
 
     protected static function boot()

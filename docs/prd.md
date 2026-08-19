@@ -117,6 +117,7 @@ graph TD
 * **FR-DIR-02:** Menampilkan kartu direktori peserta dengan paginasi, pencarian nama, filter asal kampus, dan filter tahun periode.
 * **FR-DIR-03:** Peserta magang dapat melengkapi biodata profil berupa kontak WhatsApp (+62), akun sosial media (@Instagram, @TikTok), tautan portofolio, dan testimoni kesan & pesan.
 * **FR-DIR-04:** Jika admin menghapus data peserta di menu Magang, berkas foto fisik dihapus dan status pendaftaran terkait otomatis diarsipkan ke status `rejected`.
+* **FR-DIR-05 (Kontrol Visibilitas / Hide Data Magang):** Admin memiliki wewenang untuk menyembunyikan (*hide*) atau memunculkan kembali (*unhide*) data peserta magang tertentu dari direktori publik. Data yang disembunyikan hanya dapat diakses dan dikelola oleh Administrator (dilengkapi badge *Hidden* dan filter visibilitas).
 
 ### 4.7. Modul Pengaturan Sistem (FR-SET)
 * **FR-SET-01:** Admin dapat mengubah nilai parameter `min_durasi_magang` dan satuannya (`bulan` atau `hari`).

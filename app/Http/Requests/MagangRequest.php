@@ -77,6 +77,9 @@ class MagangRequest extends FormRequest
             // Text area
             'kesan' => ['nullable', 'string', 'max:2000'],
             'pesan' => ['nullable', 'string', 'max:2000'],
+
+            // Visibilitas data (Admin only)
+            'is_hidden' => ['nullable', 'boolean'],
         ];
 
         // File foto: wajib saat create, nullable saat update

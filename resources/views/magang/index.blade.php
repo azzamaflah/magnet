@@ -102,9 +102,26 @@
                             </div>
                         </div>
 
+                        {{-- Filter Visibilitas (Khusus Admin) --}}
+                        @if(auth()->check() && auth()->user()->isAdmin())
+                            <div class="filter-item">
+                                <div class="filter-label">
+                                    <i class="fas fa-eye-slash"></i>
+                                    <span>Visibilitas</span>
+                                </div>
+                                <div style="position: relative;">
+                                    <select name="visibility" id="visibilitySelect" class="filter-select">
+                                        <option value="all" {{ ($selectedVisibility ?? 'all') == 'all' ? 'selected' : '' }}>Semua Data</option>
+                                        <option value="visible" {{ ($selectedVisibility ?? '') == 'visible' ? 'selected' : '' }}>Tampil Publik</option>
+                                        <option value="hidden" {{ ($selectedVisibility ?? '') == 'hidden' ? 'selected' : '' }}>Disembunyikan</option>
+                                    </select>
+                                </div>
+                            </div>
+                        @endif
+
                         {{-- Tombol Reset --}}
                         <div class="filter-item filter-actions">
-                            @if(request('search') || request('kampus') || $selectedYear != 'all')
+                            @if(request('search') || request('kampus') || ($selectedYear ?? 'all') != 'all' || ($selectedVisibility ?? 'all') != 'all')
                                 <a href="{{ route('magang.index') }}" class="filter-btn filter-btn-secondary">
                                     <i class="fas fa-times"></i>
                                     <span>Reset</span>
@@ -120,7 +137,7 @@
                 <div id="magang-container" class="flex overflow-x-auto gap-6 py-4 hide-scrollbar">
                     @foreach ($magangs as $magang)
                     <div class="card-wrapper flex-shrink-0 w-80 sm:w-96">
-                        <div class="magang-card relative" @if ($magang->foto)
+                        <div class="magang-card relative {{ $magang->is_hidden ? 'ring-2 ring-yellow-500/50 opacity-90' : '' }}" @if ($magang->foto)
                             style="background-image: url('{{ asset('storage/' . $magang->foto) }}');" @else
                             style="background: linear-gradient(135deg, #{{ substr(md5($magang->nama), 0, 6) }} 0%, #{{ substr(md5($magang->nama), 6, 6) }} 100%);"
                             @endif>
@@ -133,15 +150,21 @@
 
                             <div class="card-overlay"></div>
                             <div class="card-blur-bottom"></div>
-                            <!--modifikasi start-->
-                            {{-- NOMOR URUT --}}
-                            <div class="absolute bottom-3 left-3 z-20">
+                            
+                            {{-- NOMOR URUT & BADGE HIDDEN --}}
+                            <div class="absolute bottom-3 left-3 z-20 flex items-center gap-2">
                                 <span class="inline-flex items-center px-2.5 py-1 rounded-lg text-xs font-semibold
                                              bg-black/50 border border-white/10 text-white backdrop-blur">
                                     #{{ ($magangs->firstItem() ?? 0) + $loop->index }}
                                 </span>
+                                @if($magang->is_hidden)
+                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-lg text-[10px] font-bold uppercase tracking-wider
+                                                 bg-yellow-500/30 border border-yellow-500/50 text-yellow-300 backdrop-blur"
+                                          title="Data disembunyikan dari publik">
+                                        <i class="fas fa-eye-slash text-[9px]"></i> Hidden
+                                    </span>
+                                @endif
                             </div>
-                            <!--modifikasi end-->
                             
                             {{-- CONTENT --}}
                             <div class="card-content relative z-10">
@@ -190,9 +213,6 @@
                                     {{-- TOMBOL AKSI & SOCIALS --}}
                                     <div class="card-actions-row">
 
-                                        {{-- =============================================== --}}
-                                        {{-- PINDAHKAN BLOK SOCIALS KE SINI --}}
-                                        {{-- =============================================== --}}
                                         @if ($magang->whatsapp || $magang->instagram || $magang->tiktok)
                                             <div class="card-socials">
                                                 @if ($magang->whatsapp && auth()->check() && auth()->user()->role == 'admin')
@@ -215,13 +235,8 @@
                                                 @endif
                                             </div>
                                         @else
-                                            {{-- Tambahkan div kosong agar alignment 'space-between' tetap rapi --}}
                                             <div></div>
                                         @endif
-                                        {{-- =============================================== --}}
-                                        {{-- AKHIR DARI BLOK SOCIALS --}}
-                                        {{-- =============================================== --}}
-
 
                                         <div class="card-actions">
                                             <a href="{{ route('magang.show', $magang) }}" class="action-btn detail"
@@ -234,6 +249,19 @@
                                                     title="Edit">
                                                     <i class="fas fa-pencil"></i>
                                                 </a>
+                                            @endif
+
+                                            {{-- TOMBOL HIDE / UNHIDE KHUSUS ADMIN --}}
+                                            @if(auth()->user()->isAdmin())
+                                                <form action="{{ route('magang.toggleVisibility', $magang) }}" method="POST" class="inline-block">
+                                                    @csrf
+                                                    @method('PATCH')
+                                                    <button type="submit" 
+                                                            class="action-btn {{ $magang->is_hidden ? 'text-yellow-400 bg-yellow-500/20 hover:bg-yellow-500/30' : 'text-gray-400 hover:text-yellow-300' }}" 
+                                                            title="{{ $magang->is_hidden ? 'Tampilkan ke Publik' : 'Sembunyikan dari Publik' }}">
+                                                        <i class="fas {{ $magang->is_hidden ? 'fa-eye-slash' : 'fa-eye' }}"></i>
+                                                    </button>
+                                                </form>
                                             @endif
 
                                             @if(auth()->user()->isAdmin())
@@ -250,9 +278,6 @@
                                     </div>
                                 </div>
                             </div>
-                            
-                            {{-- BLOK SOCIALS DIPINDAH DARI SINI --}}
-
                         </div>
                     </div>
                 @endforeach
@@ -422,10 +447,13 @@
                     const currentSearchInput = document.getElementById('searchInput');
                     const currentKampusSelect = document.getElementById('kampusSelect');
                     const currentYearSelect = document.getElementById('yearSelect');
+                    const currentVisibilitySelect = document.getElementById('visibilitySelect');
                     if (!currentSearchInput || !currentKampusSelect || !currentYearSelect) return;
+
                     const searchValue = currentSearchInput.value;
                     const kampusValue = currentKampusSelect.value;
                     const yearValue = currentYearSelect.value;
+                    const visibilityValue = currentVisibilitySelect ? currentVisibilitySelect.value : 'all';
                     
                     let loaderTimeout = setTimeout(() => {
                         if (searchLoader) searchLoader.style.display = 'flex';
@@ -437,6 +465,7 @@
                     if (searchValue) params.append('search', searchValue);
                     if (kampusValue) params.append('kampus', kampusValue);
                     if (yearValue && yearValue !== 'all') params.append('year', yearValue);
+                    if (visibilityValue && visibilityValue !== 'all') params.append('visibility', visibilityValue);
 
                     fetch(`{{ route('magang.index') }}?${params.toString()}`, {
                         headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'text/html' }
@@ -449,20 +478,13 @@
                         if (yearLoader) yearLoader.style.display = 'none';
                         const parser = new DOMParser();
                         const doc = parser.parseFromString(html, 'text/html');
-                        // modifikasi start
-                        // const newContainer = doc.getElementById('magang-container');
-                        // const oldContainer = document.getElementById('magang-container');
-
-                        // if (newContainer && oldContainer) {
-                        //     oldContainer.innerHTML = newContainer.innerHTML;
-                        // }
+                        
                         const newResults = doc.getElementById('magang-results');
                         const oldResults = document.getElementById('magang-results');
                         
                         if (newResults && oldResults) {
                             oldResults.innerHTML = newResults.innerHTML;
                         }
-                        // modifikasi end
                         
                         // Re-init logic & Update URL
                         const newUrl = `${window.location.pathname}${params.toString() ? '?' + params.toString() : ''}`;
@@ -487,16 +509,20 @@
                     yearSelect.addEventListener('change', performFilter);
                     yearSelect.dataset.listenerAttached = 'true';
                 }
+                const visibilitySelect = document.getElementById('visibilitySelect');
+                if (visibilitySelect && !visibilitySelect.dataset.listenerAttached) {
+                    visibilitySelect.addEventListener('change', performFilter);
+                    visibilitySelect.dataset.listenerAttached = 'true';
+                }
             }
 
-            // Auto-hide success alert
+            // Auto-hide success alert (hanya hapus elemen alert, bukan parent container)
             const successAlert = document.querySelector('.success-alert');
             if (successAlert) {
                 setTimeout(() => {
                     successAlert.classList.add('fade-out');
                     setTimeout(() => {
-                        if (successAlert.parentElement) successAlert.parentElement.remove();
-                        else successAlert.remove();
+                        successAlert.remove();
                     }, 500);
                 }, 3000);
             }

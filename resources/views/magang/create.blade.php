@@ -214,6 +214,25 @@
                                         <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
                                     @enderror
                                 </div>
+
+                                {{-- VISIBILITAS PUBLIK (ADMIN ONLY) --}}
+                                @if(auth()->check() && auth()->user()->isAdmin())
+                                    <div class="border-t border-[#3a3a3a] pt-4 mt-2">
+                                        <label class="claude-label flex items-center gap-2 mb-2 font-semibold text-white">
+                                            <i class="fas fa-shield-alt text-[#d97757]"></i>
+                                            <span>Privasi & Visibilitas Publik</span>
+                                        </label>
+                                        <label class="flex items-start gap-3 p-3.5 bg-black/20 border border-[#3a3a3a] rounded-xl cursor-pointer hover:border-[#d97757]/40 transition-all">
+                                            <input type="checkbox" name="is_hidden" value="1" 
+                                                   {{ old('is_hidden') ? 'checked' : '' }}
+                                                   class="w-4 h-4 mt-0.5 rounded border-gray-600 text-[#d97757] focus:ring-[#d97757]/40 bg-[#1a1a1a]">
+                                            <div>
+                                                <span class="text-sm font-medium text-white block">Sembunyikan data peserta ini dari publik</span>
+                                                <span class="text-xs text-gray-400 block mt-0.5">Jika dicentang, peserta ini tidak akan muncul di daftar publik dan hanya bisa dilihat oleh Administrator.</span>
+                                            </div>
+                                        </label>
+                                    </div>
+                                @endif
                             </div>
 
                             {{-- Kolom Kanan Form --}}

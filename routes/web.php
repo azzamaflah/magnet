@@ -54,6 +54,7 @@ Route::middleware('auth')->group(function () {
         // Rute Admin untuk Magang
         Route::get('/magang/create', [MagangController::class, 'create'])->name('magang.create');
         Route::post('/magang', [MagangController::class, 'store'])->name('magang.store');
+        Route::patch('/magang/{magang}/toggle-visibility', [MagangController::class, 'toggleVisibility'])->name('magang.toggleVisibility');
         Route::delete('/magang/{magang}', [MagangController::class, 'destroy'])->name('magang.destroy');
 
         // RUTE TINDAKAN ADMIN (Pendaftaran)

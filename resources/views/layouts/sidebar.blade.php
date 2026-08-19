@@ -42,7 +42,7 @@
         <a href="{{ route('dashboard') }}"
             class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
             {{ request()->routeIs('dashboard') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
-            :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Dashboard' : ''">
+            :class="expanded ? 'px-4' : 'px-3 justify-center'" :x-tooltip="!expanded ? 'Dashboard' : null">
             <i class="fas fa-home w-5 text-center flex-shrink-0"></i>
             <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -56,7 +56,7 @@
         <a href="{{ route('lowongan.index') }}"
             class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
             {{ request()->routeIs('lowongan.*') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
-            :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Lowongan Magang' : ''">
+            :class="expanded ? 'px-4' : 'px-3 justify-center'" :x-tooltip="!expanded ? 'Lowongan Magang' : null">
             <i class="fas fa-briefcase w-5 text-center flex-shrink-0"></i>
             <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -70,7 +70,7 @@
         <a href="{{ route('daftar.index') }}"
             class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
             {{ request()->routeIs('daftar.*') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
-            :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Pendaftaran Magang' : ''">
+            :class="expanded ? 'px-4' : 'px-3 justify-center'" :x-tooltip="!expanded ? 'Pendaftaran Magang' : null">
             <i class="fas fa-user-plus w-5 text-center flex-shrink-0"></i>
             <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -84,7 +84,7 @@
         <a href="{{ route('magang.index') }}"
             class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
             {{ request()->routeIs('magang.index') || request()->routeIs('magang.show') || request()->routeIs('magang.edit') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
-            :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Data Magang' : ''">
+            :class="expanded ? 'px-4' : 'px-3 justify-center'" :x-tooltip="!expanded ? 'Data Magang' : null">
             <i class="fas fa-th w-5 text-center flex-shrink-0"></i>
             <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
                 x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -95,26 +95,12 @@
         </a>
 
         @if (auth()->user()->isAdmin())
-            {{-- Link Profil Saya --}}
-            <a href="{{ route('profile.edit') }}"
-                class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
-                {{ request()->routeIs('profile.edit') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
-                :class="expanded ? 'px-4' : 'px-3 justify-center'" x-tooltip.right="!expanded ? 'Profil Saya' : ''">
-                <i class="fas fa-user-circle w-5 text-center flex-shrink-0"></i>
-                <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
-                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
-                    x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
-                    x-transition:leave-end="opacity-0">
-                    Profil Saya
-                </span>
-            </a>
-
             {{-- Link Pengaturan Magang --}}
             <a href="{{ route('settings.index') }}"
                 class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
                 {{ request()->routeIs('settings.*') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
                 :class="expanded ? 'px-4' : 'px-3 justify-center'"
-                x-tooltip.right="!expanded ? 'Pengaturan Magang' : ''">
+                :x-tooltip="!expanded ? 'Pengaturan Magang' : null">
                 <i class="fas fa-sliders-h w-5 text-center flex-shrink-0"></i>
                 <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
                     x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
@@ -127,32 +113,59 @@
     </nav>
 
     {{-- AREA USER & LOGOUT --}}
-    <div class="p-4 border-t border-[#3a3a3a] flex-shrink-0">
-        <div class="flex items-center" :class="expanded ? 'gap-3' : 'justify-center'">
-            <div
-                class="w-10 h-10 rounded-full bg-[#d97757]/20 text-[#e88968] flex items-center justify-center font-bold flex-shrink-0">
-                {{ substr(auth()->user()->name, 0, 1) }}
-            </div>
+    <div class="p-3.5 border-t border-[#3a3a3a] flex-shrink-0">
+        
+        {{-- Kartu Akun / Profil Interaktif --}}
+        @if(auth()->user()->isAdmin())
+            <a href="{{ route('profile.edit') }}" 
+               class="group flex items-center p-2 rounded-xl border transition-all duration-200 
+                      {{ request()->routeIs('profile.*') 
+                         ? 'bg-[#d97757]/15 border-[#d97757]/60 text-white shadow-sm' 
+                         : 'border-transparent hover:border-[#3a3a3a] hover:bg-white/5 text-gray-300 hover:text-white' }}"
+               :class="expanded ? 'gap-3 justify-between' : 'justify-center'"
+               :x-tooltip="!expanded ? 'Edit Profil Admin' : null">
+                
+                <div class="flex items-center gap-3 overflow-hidden">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#d97757] to-[#c4623e] text-white flex items-center justify-center font-bold flex-shrink-0 shadow-md shadow-[#d97757]/20 group-hover:scale-105 transition-transform">
+                        {{ substr(auth()->user()->name, 0, 1) }}
+                    </div>
 
-            <div class="overflow-hidden whitespace-nowrap" x-show="expanded"
-                x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0"
-                x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100"
-                x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
-                <p class="text-sm font-semibold text-white truncate">{{ auth()->user()->name }}</p>
+                    <div class="overflow-hidden whitespace-nowrap text-left" x-show="expanded"
+                        x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0"
+                        x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100"
+                        x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                        <p class="text-sm font-semibold truncate text-white group-hover:text-[#e88968] transition-colors">
+                            {{ auth()->user()->name }}
+                        </p>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="bg-red-500/20 text-red-400 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase border border-red-500/30">
+                                <i class="fas fa-crown text-[9px] mr-0.5"></i>Admin
+                            </span>
+                        </div>
+                    </div>
+                </div>
 
-                @if (auth()->user()->isAdmin())
-                    <span
-                        style="background-color: rgba(220, 38, 38, 0.2); color: #f87171; padding: 0.125rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600;">
-                        <i class="fas fa-crown" style="font-size: 0.625rem; margin-right: 0.25rem;"></i>ADMIN
+                <i x-show="expanded" 
+                   class="fas fa-gear text-gray-400 group-hover:text-[#e88968] group-hover:rotate-45 transition-all text-xs flex-shrink-0 ml-1"></i>
+            </a>
+        @else
+            {{-- User Biasa (Non-Admin) --}}
+            <div class="flex items-center p-2 rounded-xl" :class="expanded ? 'gap-3' : 'justify-center'">
+                <div class="w-10 h-10 rounded-xl bg-[#d97757]/20 text-[#e88968] flex items-center justify-center font-bold flex-shrink-0">
+                    {{ substr(auth()->user()->name, 0, 1) }}
+                </div>
+
+                <div class="overflow-hidden whitespace-nowrap" x-show="expanded"
+                    x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0"
+                    x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-100"
+                    x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0">
+                    <p class="text-sm font-semibold text-white truncate">{{ auth()->user()->name }}</p>
+                    <span class="bg-blue-500/20 text-blue-400 px-1.5 py-0.5 rounded text-[10px] font-bold tracking-wider uppercase border border-blue-500/30 mt-0.5 inline-block">
+                        <i class="fas fa-user text-[9px] mr-0.5"></i>User
                     </span>
-                @else
-                    <span
-                        style="background-color: rgba(59, 130, 246, 0.2); color: #60a5fa; padding: 0.125rem 0.5rem; border-radius: 12px; font-size: 0.7rem; font-weight: 600;">
-                        <i class="fas fa-user" style="font-size: 0.625rem; margin-right: 0.25rem;"></i>USER
-                    </span>
-                @endif
+                </div>
             </div>
-        </div>
+        @endif
 
         {{-- TOMBOL TOGGLE TEMA (DARK / LIGHT MODE) --}}
         <div class="mt-4" x-data="{ currentTheme: localStorage.getItem('magnet_theme') || 'dark' }"
