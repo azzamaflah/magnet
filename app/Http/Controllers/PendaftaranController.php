@@ -22,24 +22,56 @@ class PendaftaranController extends Controller
      */
     public function index(Request $request)
     {
-        $selectedYear  = $request->input('year', 'all');
-        $selectedMonth = $request->input('month', 'all');
-        $search        = $request->input('search');
-        $sort          = $request->input('sort', 'latest');
-        $user          = auth()->user();
+        $user               = auth()->user();
+        $selectedStatus     = $request->input('status', 'all');
+        $selectedLowongan   = $request->input('lowongan_id', 'all');
+        $selectedKampus     = $request->input('kampus', 'all');
+        $selectedKonfirmasi = $request->input('konfirmasi', 'all');
+        $selectedYear       = $request->input('year', 'all');
+        $selectedMonth      = $request->input('month', 'all');
+        $search             = $request->input('search');
+        $sort               = $request->input('sort', 'latest');
 
-        if ($user->isAdmin()) {
-            $query = Pendaftaran::with('lowongan');
-        } else {
-            $query = Pendaftaran::with('lowongan')->where('user_id', $user->id);
+        $baseQuery = $user->isAdmin()
+            ? Pendaftaran::with('lowongan')
+            : Pendaftaran::with('lowongan')->where('user_id', $user->id);
+
+        // Hitung Tab Status Counters
+        $statusCounts = (clone $baseQuery)
+            ->select('status', DB::raw('COUNT(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status');
+
+        $countAll         = (clone $baseQuery)->count();
+        $countPending     = $statusCounts->get('pending', 0);
+        $countApproved    = $statusCounts->get('approved', 0);
+        $countConditional = $statusCounts->get('conditional', 0);
+        $countRejected    = $statusCounts->get('rejected', 0);
+
+        // Query Utama dengan Filter
+        $query = clone $baseQuery;
+
+        if ($selectedStatus !== 'all') {
+            $query->where('status', $selectedStatus);
         }
 
-        $availableYears = (clone $query)
-            ->select(DB::raw('YEAR(created_at) as year'))
-            ->distinct()
-            ->whereNotNull('created_at')
-            ->orderBy('year', 'desc')
-            ->pluck('year');
+        if ($selectedLowongan !== 'all') {
+            if ($selectedLowongan === 'umum') {
+                $query->whereNull('lowongan_id');
+            } else {
+                $query->where('lowongan_id', $selectedLowongan);
+            }
+        }
+
+        if ($selectedKampus !== 'all') {
+            $query->where('asal_kampus', $selectedKampus);
+        }
+
+        if ($selectedKonfirmasi === 'confirmed') {
+            $query->whereNotNull('konfirmasi_at');
+        } elseif ($selectedKonfirmasi === 'unconfirmed') {
+            $query->where('status', 'approved')->whereNull('konfirmasi_at');
+        }
 
         if ($selectedYear !== 'all') {
             $query->whereYear('created_at', $selectedYear);
@@ -52,26 +84,60 @@ class PendaftaranController extends Controller
         if ($search) {
             $query->where(function ($q) use ($search) {
                 $q->where('nama_pendaftar', 'like', '%' . $search . '%')
+                    ->orWhere('email', 'like', '%' . $search . '%')
                     ->orWhere('asal_kampus', 'like', '%' . $search . '%')
                     ->orWhere('prodi', 'like', '%' . $search . '%');
             });
         }
 
         if ($sort === 'oldest') {
-            $query->orderBy('created_at', 'ASC');
+            $query->oldest('created_at');
+        } elseif ($sort === 'name_asc') {
+            $query->orderBy('nama_pendaftar', 'asc');
+        } elseif ($sort === 'name_desc') {
+            $query->orderBy('nama_pendaftar', 'desc');
         } else {
-            $query->latest();
+            $query->latest('created_at');
         }
 
         $pendaftarans = $query->paginate(10)->withQueryString();
 
+        // Data untuk Dropdown Filter
+        $lowongans = Lowongan::select('id', 'judul_posisi', 'divisi')->orderBy('divisi')->get();
+        
+        $kampusList = (clone $baseQuery)
+            ->select('asal_kampus')
+            ->distinct()
+            ->whereNotNull('asal_kampus')
+            ->where('asal_kampus', '!=', '')
+            ->orderBy('asal_kampus', 'asc')
+            ->pluck('asal_kampus');
+
+        $availableYears = (clone $baseQuery)
+            ->select(DB::raw('YEAR(created_at) as year'))
+            ->distinct()
+            ->whereNotNull('created_at')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
         return view('daftar.index', [
-            'pendaftarans'   => $pendaftarans,
-            'availableYears' => $availableYears,
-            'selectedYear'   => $selectedYear,
-            'selectedMonth'  => $selectedMonth,
-            'search'         => $search,
-            'sort'           => $sort,
+            'pendaftarans'       => $pendaftarans,
+            'availableYears'     => $availableYears,
+            'lowongans'          => $lowongans,
+            'kampusList'         => $kampusList,
+            'selectedStatus'     => $selectedStatus,
+            'selectedLowongan'   => $selectedLowongan,
+            'selectedKampus'     => $selectedKampus,
+            'selectedKonfirmasi' => $selectedKonfirmasi,
+            'selectedYear'       => $selectedYear,
+            'selectedMonth'      => $selectedMonth,
+            'search'             => $search,
+            'sort'               => $sort,
+            'countAll'           => $countAll,
+            'countPending'       => $countPending,
+            'countApproved'      => $countApproved,
+            'countConditional'   => $countConditional,
+            'countRejected'      => $countRejected,
         ]);
     }
 
@@ -283,6 +349,7 @@ class PendaftaranController extends Controller
                     'user_id'         => $pendaftaran->user_id,
                     'lowongan_id'     => $pendaftaran->lowongan_id,
                     'nama'            => $pendaftaran->nama_pendaftar,
+                    'email'           => $pendaftaran->email,
                     'asal_kampus'     => $pendaftaran->asal_kampus,
                     'prodi'           => $pendaftaran->prodi,
                     'tanggal_mulai'   => $pendaftaran->tanggal_mulai,

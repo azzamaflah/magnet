@@ -1,37 +1,6 @@
 {{-- resources/views/magang/show.blade.php --}}
-<!DOCTYPE html>
-<html lang="id">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Data Magang - BPS Bantul</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<x-main-layout>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&display=swap');
-
-        html {
-            background-color: #1a1a1a;
-            overscroll-behavior: none;
-        }
-
-        * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-        }
-
-        .claude-title {
-            font-family: 'Fraunces', 'Georgia', 'Times New Roman', serif;
-            font-weight: 400;
-            letter-spacing: -0.02em;
-        }
-
-        body {
-            background-color: #1a1a1a;
-            color: #e8e8e8;
-        }
-
         .detail-card {
             background-color: #2a2a2a;
             border: 1px solid #3a3a3a;
@@ -92,23 +61,14 @@
 
         @media (min-width: 768px) {
             .info-grid {
-                /* ✅ DIUBAH AGAR BISA 3 KOLOM */
                 grid-template-columns: repeat(3, 1fr);
             }
         }
-        
-        /* ✅ Style agar item bisa span 2 kolom */
-        @media (min-width: 1024px) {
-            .lg\:col-span-2 {
-                grid-column: span 2 / span 2;
-            }
-        }
-
 
         .info-item {
-            background-color: #242424;
+            background-color: #1f1f1f;
             padding: 1.25rem;
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid #333;
         }
 
@@ -117,119 +77,34 @@
             font-size: 0.75rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            font-weight: 500;
             margin-bottom: 0.5rem;
+            font-weight: 600;
         }
 
         .info-value {
-            color: white;
+            color: #ffffff;
             font-size: 1.125rem;
-            font-weight: 500;
+            font-weight: 600;
         }
 
-        .claude-button {
-            background-color: #d97757;
-            color: #ffffff;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .claude-button:hover {
-            background-color: #e88968;
-            transform: translateY(-1px);
-        }
-
-        .claude-button-secondary {
-            background-color: #3a3a3a;
-            color: #e8e8e8;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .claude-button-secondary:hover {
-            background-color: #4a4a4a;
-        }
-
-        .claude-button-danger {
-            background-color: #dc2626;
-            color: #ffffff;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            font-weight: 500;
-            transition: all 0.2s;
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .claude-button-danger:hover {
-            background-color: #b91c1c;
-        }
-
-        .initial-avatar {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #d97757 0%, #e88968 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 6rem;
-            font-weight: 700;
-            color: white;
-            margin: 0 auto;
-            border: 4px solid #3a3a3a;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-        }
-
-        .social-media-section {
-            background-color: #242424;
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid #333;
-            margin-top: 2rem;
-        }
-
-        .social-links {
+        .social-section {
             display: flex;
             gap: 1rem;
+            justify-content: center;
             flex-wrap: wrap;
-            margin-top: 1rem;
+            margin: 2rem 0;
         }
 
-        .social-link {
+        .social-button {
             display: inline-flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.875rem 1.25rem;
+            padding: 0.75rem 1.5rem;
             border-radius: 10px;
-            text-decoration: none;
             font-weight: 500;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-        }
-
-        .social-link:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-        }
-
-        .social-link i {
-            font-size: 1.5rem;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            text-decoration: none;
         }
 
         .social-whatsapp {
@@ -284,15 +159,6 @@
             color: #93c5fd;
         }
 
-        .success-alert {
-            background-color: rgba(34, 197, 94, 0.1);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #4ade80;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1.5rem;
-        }
-
         .kesan-pesan-section {
             background-color: #242424;
             padding: 1.5rem;
@@ -344,20 +210,17 @@
             font-style: italic;
         }
     </style>
-</head>
 
-{{-- Menggunakan <x-main-layout> --}}
-<x-main-layout>
     <div class="claude-container">
-        <div class="min-h-screen py-8 px-4">
-            <div class="max-w-7xl mx-auto">
+        <div class="min-h-screen py-8 px-4 sm:px-6">
+            <div class="max-w-6xl mx-auto">
                 <div class="mb-8">
                     <a href="{{ route('magang.index') }}"
                         class="text-[#d97757] hover:text-[#e88968] inline-flex items-center gap-2 mb-4">
                         <i class="fas fa-arrow-left"></i>
                         <span>Kembali ke Data Magang</span>
                     </a>
-                    <h1 class="claude-title text-3xl text-white">Detail Data Magang</h1>
+                    <h1 class="claude-title text-2xl sm:text-3xl text-white">Detail Data Magang</h1>
                 </div>
 
                 {{-- Alert Data Disembunyikan (Khusus Admin) --}}
@@ -384,7 +247,7 @@
                 @endif
 
                 @if (session('success'))
-                    <div class="success-alert">
+                    <div class="success-alert mb-6">
                         <i class="fas fa-check-circle mr-2"></i>
                         <span>{{ session('success') }}</span>
                     </div>
@@ -394,9 +257,9 @@
                     <div class="text-center mb-8">
                         @if($magang->foto)
                             <img src="{{ asset('storage/' . $magang->foto) }}" alt="{{ $magang->nama }}"
-                                style="width: 250px; height: 250px; object-fit: cover; border-radius: 50%; margin: 0 auto; border: 4px solid #3a3a3a; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
+                                style="width: 220px; height: 220px; object-fit: cover; border-radius: 50%; margin: 0 auto; border: 4px solid #3a3a3a; box-shadow: 0 8px 24px rgba(0,0,0,0.3);">
                         @else
-                            <div class="initial-avatar"
+                            <div class="w-36 h-36 rounded-full flex items-center justify-center text-4xl font-bold text-white mx-auto shadow-xl"
                                 style="background: linear-gradient(135deg, #{{ substr(md5($magang->nama), 0, 6) }} 0%, #{{ substr(md5($magang->nama), 6, 6) }} 100%);">
                                 {{ $magang->initials }}
                             </div>
@@ -404,7 +267,7 @@
                     </div>
 
                     <div class="text-center mb-6">
-                        <h2 class="text-3xl font-bold text-white mb-3">{{ $magang->nama }}</h2>
+                        <h2 class="text-2xl sm:text-3xl font-bold text-white mb-3">{{ $magang->nama }}</h2>
                         @php
                             $now = \Carbon\Carbon::now();
                             $mulai = \Carbon\Carbon::parse($magang->tanggal_mulai);
@@ -427,7 +290,19 @@
                         </div>
                     </div>
 
-                    {{-- ✅ GRID INFO DIPERBARUI --}}
+                    {{-- Formasi Lowongan (Jika Ada) --}}
+                    @if($magang->lowongan)
+                        <div class="bg-[#1f1f1f] p-4 rounded-xl border border-[#3a3a3a] mb-6 text-center">
+                            <span class="text-xs text-gray-400 uppercase tracking-wider font-semibold block">
+                                <i class="fas fa-briefcase text-[#e88968] mr-1"></i> Penempatan Divisi / Lowongan
+                            </span>
+                            <span class="text-[#e88968] font-bold text-base mt-1 block">
+                                {{ $magang->lowongan->judul_posisi }} ({{ $magang->lowongan->divisi }})
+                            </span>
+                        </div>
+                    @endif
+
+                    {{-- GRID INFO --}}
                     <div class="info-grid">
                         <div class="info-item">
                             <div class="info-label">
@@ -436,7 +311,6 @@
                             <div class="info-value">{{ $magang->asal_kampus }}</div>
                         </div>
 
-                        {{-- ✅ PRODI DITAMBAHKAN DI SINI --}}
                         <div class="info-item">
                             <div class="info-label">
                                 <i class="fas fa-book-open mr-1"></i> Prodi / Jurusan
@@ -466,38 +340,41 @@
                             </div>
                             <div class="info-value">{{ $selesai->isoFormat('D MMMM YYYY') }}</div>
                         </div>
-                    </div>
-                    {{-- AKHIR GRID INFO --}}
 
-
-                    @if($magang->whatsapp || $magang->instagram || $magang->tiktok)
-                        <div class="social-media-section">
-                            <h3 class="text-white font-semibold text-lg mb-3">
-                                <i class="fas fa-share-alt mr-2"></i>Media Sosial
-                            </h3>
-                            <div class="social-links">
-                                @if($magang->whatsapp && auth()->check() && auth()->user()->role == 'admin')
-                                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $magang->whatsapp) }}" target="_blank"
-                                        class="social-link social-whatsapp">
-                                        <i class="fab fa-whatsapp"></i>
-                                        <span>WhatsApp</span>
-                                    </a>
-                                @endif
-                                @if($magang->instagram)
-                                    <a href="https://instagram.com/{{ ltrim($magang->instagram, '@') }}" target="_blank"
-                                        class="social-link social-instagram">
-                                        <i class="fab fa-instagram"></i>
-                                        <span>{{ $magang->instagram }}</span>
-                                    </a>
-                                @endif
-                                @if($magang->tiktok)
-                                    <a href="https://tiktok.com/@{{ ltrim($magang->tiktok, '@') }}" target="_blank"
-                                        class="social-link social-tiktok">
-                                        <i class="fab fa-tiktok"></i>
-                                        <span>{{ $magang->tiktok }}</span>
-                                    </a>
-                                @endif
+                        <div class="info-item">
+                            <div class="info-label">
+                                <i class="fas fa-envelope mr-1"></i> Email Peserta
                             </div>
+                            <div class="info-value text-sm truncate">{{ $magang->email ?? '-' }}</div>
+                        </div>
+                    </div>
+
+                    {{-- Social Media Links --}}
+                    @if($magang->whatsapp || $magang->instagram || $magang->tiktok)
+                        <div class="social-section">
+                            @if($magang->whatsapp)
+                                <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $magang->whatsapp) }}"
+                                    target="_blank" class="social-button social-whatsapp">
+                                    <i class="fab fa-whatsapp text-lg"></i>
+                                    <span>{{ $magang->whatsapp }}</span>
+                                </a>
+                            @endif
+
+                            @if($magang->instagram)
+                                <a href="https://instagram.com/{{ ltrim($magang->instagram, '@') }}" target="_blank"
+                                    class="social-button social-instagram">
+                                    <i class="fab fa-instagram text-lg"></i>
+                                    <span>{{ $magang->instagram }}</span>
+                                </a>
+                            @endif
+
+                            @if($magang->tiktok)
+                                <a href="https://tiktok.com/{{ ltrim($magang->tiktok, '@') }}" target="_blank"
+                                    class="social-button social-tiktok">
+                                    <i class="fab fa-tiktok text-lg"></i>
+                                    <span>{{ $magang->tiktok }}</span>
+                                </a>
+                            @endif
                         </div>
                     @endif
 
@@ -539,11 +416,11 @@
                     @if($magang->link_pekerjaan)
                         <div class="karya-section">
                             <h3 class="text-white font-semibold text-lg mb-2">
-                                <i class="fas fa-briefcase mr-2"></i>Karya/Pekerjaan
+                                <i class="fas fa-briefcase mr-2"></i>Karya / Portofolio
                             </h3>
                             <a href="{{ $magang->link_pekerjaan }}" target="_blank" class="karya-link">
                                 <i class="fas fa-external-link-alt"></i>
-                                <span>Lihat Karya</span>
+                                <span>Lihat Karya Peserta</span>
                             </a>
                         </div>
                     @endif
@@ -561,8 +438,7 @@
                         </div>
                     </div>
 
-                    <div
-                        class="flex flex-col md:flex-row gap-3 justify-between items-center mt-8 pt-6 border-t border-[#3a3a3a]">
+                    <div class="flex flex-col md:flex-row gap-3 justify-between items-center mt-8 pt-6 border-t border-[#3a3a3a]">
                         <a href="{{ route('magang.index') }}" class="claude-button-secondary w-full md:w-auto">
                             <i class="fas fa-arrow-left"></i>
                             <span>Kembali</span>

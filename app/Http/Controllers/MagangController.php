@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\MagangRequest;
+use App\Models\Lowongan;
 use App\Models\Magang;
 use App\Models\Pendaftaran;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -17,7 +19,7 @@ class MagangController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $query = Magang::query();
+        $query = Magang::with('lowongan');
 
         // Jika bukan Admin, hanya tampilkan data magang yang TIDAK disembunyikan (atau milik user sendiri)
         if (!$user || !$user->isAdmin()) {
@@ -76,7 +78,12 @@ class MagangController extends Controller
      */
     public function create()
     {
-        return view('magang.create');
+        $lowongans = Lowongan::all();
+        $setting = Setting::where('key', 'min_durasi_magang')->first();
+        $minDurasi = (int) ($setting->value ?? 3);
+        $tipeDurasi = $setting->type ?? 'bulan';
+
+        return view('magang.create', compact('lowongans', 'minDurasi', 'tipeDurasi'));
     }
 
     /**
@@ -122,7 +129,12 @@ class MagangController extends Controller
     {
         $this->authorizeOwnerOrAdmin($magang);
 
-        return view('magang.edit', compact('magang'));
+        $lowongans = Lowongan::all();
+        $setting = Setting::where('key', 'min_durasi_magang')->first();
+        $minDurasi = (int) ($setting->value ?? 3);
+        $tipeDurasi = $setting->type ?? 'bulan';
+
+        return view('magang.edit', compact('magang', 'lowongans', 'minDurasi', 'tipeDurasi'));
     }
 
     /**

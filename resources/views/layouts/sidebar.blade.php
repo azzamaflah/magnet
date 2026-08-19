@@ -83,7 +83,7 @@
         {{-- Data Magang --}}
         <a href="{{ route('magang.index') }}"
             class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
-            {{ request()->routeIs('magang.index') || request()->routeIs('magang.show') || request()->routeIs('magang.edit') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
+            {{ request()->routeIs('magang.*') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
             :class="expanded ? 'px-4' : 'px-3 justify-center'" :x-tooltip="!expanded ? 'Data Magang' : null">
             <i class="fas fa-th w-5 text-center flex-shrink-0"></i>
             <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"

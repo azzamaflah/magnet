@@ -1,146 +1,75 @@
-<!DOCTYPE html>
-<html lang="id">
+{{-- resources/views/magang/create.blade.php --}}
+<x-main-layout>
+    {{-- Load Flatpickr CSS via CDN --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Data Magang - BPS Bantul</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@400;500;600&display=swap');
-
-        html {
-            background-color: #1a1a1a;
-            overscroll-behavior: none; 
+        /* Custom Override Flatpickr agar serasi dengan tema */
+        .flatpickr-calendar {
+            background: #2a2a2a !important;
+            border: 1px solid #3a3a3a !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.5) !important;
         }
-
-        * {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        .flatpickr-day.selected, .flatpickr-day.startRange, .flatpickr-day.endRange, 
+        .flatpickr-day.selected.inRange, .flatpickr-day.startRange.inRange, 
+        .flatpickr-day.endRange.inRange, .flatpickr-day.selected:focus, 
+        .flatpickr-day.startRange:focus, .flatpickr-day.endRange:focus, 
+        .flatpickr-day.selected:hover, .flatpickr-day.startRange:hover, 
+        .flatpickr-day.endRange:hover, .flatpickr-day.selected.prevMonthDay, 
+        .flatpickr-day.startRange.prevMonthDay, .flatpickr-day.endRange.prevMonthDay, 
+        .flatpickr-day.selected.nextMonthDay, .flatpickr-day.startRange.nextMonthDay, 
+        .flatpickr-day.endRange.nextMonthDay {
+            background: #d97757 !important;
+            border-color: #d97757 !important;
         }
-
-        .claude-title {
-            font-family: 'Fraunces', 'Georgia', 'Times New Roman', serif;
-            font-weight: 400;
-            letter-spacing: -0.02em;
+        .flatpickr-day:hover {
+            background: #3a3a3a !important;
+            border-color: #3a3a3a !important;
         }
-
-        body {
-            background-color: #1a1a1a;
-            color: #e8e8e8;
+        .flatpickr-months .flatpickr-month {
+            background: #2a2a2a !important;
+            color: white !important;
+            fill: white !important;
         }
-
-        /* Menggunakan style 'filter-input' dari layout utama agar konsisten */
-        .claude-input {
-            background-color: rgba(45, 45, 45, 0.6);
-            border: 1px solid rgba(58, 58, 58, 0.8);
-            color: #e8e8e8;
-            padding: 0.75rem 1rem;
-            border-radius: 10px;
-            width: 100%;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            font-size: 0.875rem;
+        .flatpickr-current-month .flatpickr-monthDropdown-months {
+            background-color: #2a2a2a !important;
         }
-
-        .claude-input:focus {
-            outline: none;
-            border-color: #d97757;
-            background-color: rgba(45, 45, 45, 0.9);
-            box-shadow: 0 0 0 3px rgba(217, 119, 87, 0.2);
+        .flatpickr-day.flatpickr-disabled, .flatpickr-day.flatpickr-disabled:hover {
+            color: #555 !important;
         }
-        
-        /* Menggunakan style 'filter-label' dari layout utama */
-        .claude-label {
-            display: block;
-            color: #c4c4c4;
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: 0.5rem;
+        .date-input-wrapper {
+            position: relative;
         }
-
-        /* Menggunakan style 'filter-btn' dari layout utama */
-        .claude-button {
-            padding: 0.75rem 1.25rem;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 0.875rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            white-space: nowrap;
-            background: linear-gradient(135deg, #d97757 0%, #e88968 100%);
-            color: white;
-            box-shadow: 0 4px 15px rgba(217, 119, 87, 0.3);
-        }
-
-        .claude-button:hover {
-            background: linear-gradient(135deg, #e88968 0%, #f09a7a 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(217, 119, 87, 0.4);
-        }
-
-        .claude-button-secondary {
-            padding: 0.75rem 1.25rem;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 0.875rem;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            border: none;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            text-decoration: none;
-            white-space: nowrap;
-            background-color: rgba(156, 163, 175, 0.2);
+        .date-input-icon {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
             color: #9ca3af;
-            border: 1px solid rgba(156, 163, 175, 0.3);
+            pointer-events: none;
         }
-
-        .claude-button-secondary:hover {
-            background-color: rgba(156, 163, 175, 0.3);
-            transform: translateY(-2px);
-        }
-
         .preview-image {
-            max-width: 200px;
+            max-width: 180px;
+            height: 180px;
+            object-fit: cover;
             border-radius: 12px;
             margin-top: 1rem;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            border: 1px solid #3a3a3a;
-        }
-
-        .social-input-wrapper {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .social-icon {
-            font-size: 1.5rem;
-            min-width: 24px;
-            text-align: center;
+            border: 2px solid #3a3a3a;
         }
     </style>
-</head>
 
-{{-- Menggunakan <x-main-layout> --}}
-<x-main-layout>
     <div class="claude-container">
         
         {{-- Header Section --}}
         <div class="border-b border-[#3a3a3a] header-section">
-            <div class="max-w-7xl mx-auto px-6 py-4">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 py-4">
                 <div class="flex items-center gap-4">
-                    <a href="{{ route('magang.index') }}" class="text-gray-400 hover:text-white" title="Kembali">
+                    <a href="{{ route('magang.index') }}" class="text-gray-400 hover:text-white" title="Kembali ke Data Magang">
                         <i class="fas fa-arrow-left"></i>
                     </a>
-                    <h2 class="claude-title text-2xl text-white">
+                    <h2 class="claude-title text-xl sm:text-2xl text-white">
                         Tambah Data Magang
                     </h2>
                 </div>
@@ -148,232 +77,326 @@
         </div>
 
         {{-- Konten Utama: Form --}}
-        <div class="max-w-7xl mx-auto py-8 px-6">
+        <div class="max-w-6xl mx-auto py-8 px-4 sm:px-6">
+
+            {{-- Menampilkan Error Validasi --}}
+            @if ($errors->any())
+                <div class="mb-6 bg-red-900/40 border border-red-500/50 text-red-200 px-5 py-4 rounded-xl relative shadow-lg" role="alert">
+                    <div class="flex items-center gap-2 font-bold mb-1">
+                        <i class="fas fa-exclamation-circle text-red-400"></i>
+                        <span>Mohon periksa kembali isian formulir:</span>
+                    </div>
+                    <ul class="mt-2 list-disc list-inside text-sm space-y-1">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
             <div class="bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-lg overflow-hidden">
                 <form action="{{ route('magang.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
 
-                    <div class="p-6 md:p-8">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
+                    <div class="p-6 md:p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
 
-                            {{-- Kolom Kiri Form --}}
-                            <div class="space-y-6">
-                                <div>
-                                    <label for="nama" class="claude-label">Nama Lengkap</label>
-                                    <input type="text" name="nama" id="nama" value="{{ old('nama') }}"
-                                        class="claude-input @error('nama') border-red-500 @enderror" required>
-                                    @error('nama')
-                                        <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
+                        {{-- Kolom Kiri: Informasi Pribadi & Pendidikan --}}
+                        <div class="space-y-6">
 
-                                <div>
-                                    <label for="asal_kampus" class="claude-label">Asal Kampus</label>
-                                    <input type="text" name="asal_kampus" id="asal_kampus" value="{{ old('asal_kampus') }}"
-                                        class="claude-input @error('asal_kampus') border-red-500 @enderror" required>
-                                    @error('asal_kampus')
-                                        <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                {{-- ✅ INPUT BARU: Prodi/Jurusan --}}
-                                <div>
-                                    <label for="prodi" class="claude-label">Prodi / Jurusan</label>
-                                    <input type="text" name="prodi" id="prodi" class="claude-input" 
-                                        placeholder="Contoh: Informatika" value="{{ old('prodi') }}" required>
-                                    @error('prodi') <span class="text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
-                                </div>
-
-                                <div>
-                                    <label for="tanggal_mulai" class="claude-label">Tanggal Mulai</label>
-                                    <input type="date" name="tanggal_mulai" id="tanggal_mulai" value="{{ old('tanggal_mulai') }}"
-                                        class="claude-input @error('tanggal_mulai') border-red-500 @enderror" required style="color-scheme: dark;">
-                                    @error('tanggal_mulai')
-                                        <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label for="tanggal_selesai" class="claude-label">Tanggal Selesai</label>
-                                    <input type="date" name="tanggal_selesai" id="tanggal_selesai"
-                                        value="{{ old('tanggal_selesai') }}"
-                                        class="claude-input @error('tanggal_selesai') border-red-500 @enderror" required style="color-scheme: dark;">
-                                    @error('tanggal_selesai')
-                                        <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                <div>
-                                    <label for="link_pekerjaan" class="claude-label">Link Karya (Opsional)</label>
-                                    <textarea name="link_pekerjaan" id="link_pekerjaan" rows="3"
-                                        class="claude-input @error('link_pekerjaan') border-red-500 @enderror"
-                                        placeholder="Contoh: https://drive.google.com/...">{{ old('link_pekerjaan') }}</textarea>
-                                    <p class="text-gray-400 text-xs mt-2">Masukkan link Google Drive, GitHub, atau portfolio online</p>
-                                    @error('link_pekerjaan')
-                                        <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
-                                    @enderror
-                                </div>
-
-                                {{-- VISIBILITAS PUBLIK (ADMIN ONLY) --}}
-                                @if(auth()->check() && auth()->user()->isAdmin())
-                                    <div class="border-t border-[#3a3a3a] pt-4 mt-2">
-                                        <label class="claude-label flex items-center gap-2 mb-2 font-semibold text-white">
-                                            <i class="fas fa-shield-alt text-[#d97757]"></i>
-                                            <span>Privasi & Visibilitas Publik</span>
-                                        </label>
-                                        <label class="flex items-start gap-3 p-3.5 bg-black/20 border border-[#3a3a3a] rounded-xl cursor-pointer hover:border-[#d97757]/40 transition-all">
-                                            <input type="checkbox" name="is_hidden" value="1" 
-                                                   {{ old('is_hidden') ? 'checked' : '' }}
-                                                   class="w-4 h-4 mt-0.5 rounded border-gray-600 text-[#d97757] focus:ring-[#d97757]/40 bg-[#1a1a1a]">
-                                            <div>
-                                                <span class="text-sm font-medium text-white block">Sembunyikan data peserta ini dari publik</span>
-                                                <span class="text-xs text-gray-400 block mt-0.5">Jika dicentang, peserta ini tidak akan muncul di daftar publik dan hanya bisa dilihat oleh Administrator.</span>
-                                            </div>
-                                        </label>
-                                    </div>
-                                @endif
+                            {{-- Pilihan Formasi Lowongan --}}
+                            <div>
+                                <label for="lowongan_id" class="filter-label mb-2">
+                                    <i class="fas fa-briefcase text-[#e88968] mr-1"></i> Formasi / Lowongan Magang
+                                </label>
+                                <select name="lowongan_id" id="lowongan_id" class="filter-select">
+                                    <option value="">-- Magang Umum (Tanpa Spesifik Divisi) --</option>
+                                    @foreach($lowongans as $item)
+                                        <option value="{{ $item->id }}" {{ old('lowongan_id') == $item->id ? 'selected' : '' }}>
+                                            {{ $item->judul_posisi }} ({{ $item->divisi }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <span class="text-xs text-gray-400 mt-1 block">Tentukan divisi penempatan peserta magang ini.</span>
+                                @error('lowongan_id') <span class="text-red-400 text-sm mt-1 block">{{ $message }}</span> @enderror
                             </div>
 
-                            {{-- Kolom Kanan Form --}}
-                            <div class="space-y-6">
-                                <div>
-                                    <label for="foto" class="claude-label">Foto Profil</label>
-                                    <input type="file" name="foto" id="foto" accept="image/jpeg,image/png,image/jpg"
-                                        class="claude-input file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-[#3a3a3a] file:text-gray-300 hover:file:bg-[#4a4a4a] @error('foto') border-red-500 @enderror" onchange="previewImage(event)"
-                                        required>
-                                    <p class="text-gray-400 text-xs mt-2">Format: JPG, PNG | Maksimal 2MB</p>
-                                    <img id="preview"
-                                        class="preview-image"
-                                        style="display: none;"
-                                        alt="Preview">
-                                    @error('foto')
-                                        <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
-                                    @enderror
+                            <div>
+                                <label for="nama" class="filter-label mb-2">Nama Lengkap <span class="text-red-400">*</span></label>
+                                <input type="text" name="nama" id="nama" value="{{ old('nama') }}"
+                                    class="filter-input @error('nama') border-red-500 @enderror" 
+                                    placeholder="Masukkan nama lengkap peserta" required>
+                                @error('nama')
+                                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="email" class="filter-label mb-2">Alamat Email (Opsional)</label>
+                                <input type="email" name="email" id="email" value="{{ old('email') }}"
+                                    class="filter-input @error('email') border-red-500 @enderror" 
+                                    placeholder="contoh: peserta@email.com">
+                                @error('email')
+                                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="asal_kampus" class="filter-label mb-2">Asal Kampus <span class="text-red-400">*</span></label>
+                                <input type="text" name="asal_kampus" id="asal_kampus" value="{{ old('asal_kampus') }}"
+                                    class="filter-input @error('asal_kampus') border-red-500 @enderror" 
+                                    placeholder="Contoh: Universitas Gadjah Mada" required>
+                                @error('asal_kampus')
+                                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="prodi" class="filter-label mb-2">Prodi / Jurusan <span class="text-red-400">*</span></label>
+                                <input type="text" name="prodi" id="prodi" class="filter-input @error('prodi') border-red-500 @enderror" 
+                                    placeholder="Contoh: Teknologi Informasi / Statistika" value="{{ old('prodi') }}" required>
+                                @error('prodi') <p class="text-red-400 text-xs mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            {{-- RENCANA PERIODE MAGANG --}}
+                            <div class="border-t border-[#3a3a3a] pt-4 mt-2">
+                                <div class="flex items-center justify-between mb-3">
+                                    <label class="filter-label flex items-center gap-2 font-semibold text-white">
+                                        <i class="fas fa-calendar-alt text-[#e88968]"></i>
+                                        <span>Periode Pelaksanaan Magang</span>
+                                    </label>
+                                    <span class="text-[11px] text-gray-400">
+                                        Min. {{ $minDurasi ?? 3 }} {{ $tipeDurasi ?? 'bulan' }}
+                                    </span>
                                 </div>
 
-                                {{-- Media Sosial --}}
-                                <div class="border-t border-[#3a3a3a] pt-6 space-y-6">
-                                    <h3 class="claude-title text-xl text-white">
-                                        <i class="fas fa-share-alt mr-2"></i>Media Sosial (Opsional)
-                                    </h3>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                     <div>
-                                        <label for="whatsapp" class="claude-label">WhatsApp</label>
-                                        <div class="social-input-wrapper">
-                                            <i class="fab fa-whatsapp social-icon text-green-500"></i>
-                                            <input type="text" name="whatsapp" id="whatsapp" value="{{ old('whatsapp') }}"
-                                                placeholder="081234567890"
-                                                class="claude-input @error('whatsapp') border-red-500 @enderror">
+                                        <label for="tanggal_mulai" class="block text-xs text-gray-300 mb-1.5 font-medium">
+                                            Tanggal Mulai <span class="text-red-400">*</span>
+                                        </label>
+                                        <div class="date-input-wrapper">
+                                            <input type="text" name="tanggal_mulai" id="tanggal_mulai" 
+                                                   class="filter-input cursor-pointer" 
+                                                   placeholder="Pilih Tanggal Mulai"
+                                                   value="{{ old('tanggal_mulai') }}" required>
+                                            <i class="fas fa-calendar-alt date-input-icon"></i>
                                         </div>
-                                        <p class="text-gray-400 text-xs mt-2 ml-9">Masukkan nomor dengan tanda + dan tanpa spasi</p>
-                                        @error('whatsapp')
-                                            <p class="text-red-400 text-xs mt-2 ml-9">{{ $message }}</p>
-                                        @enderror
+                                        @error('tanggal_mulai') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
                                     </div>
                                     <div>
-                                        <label for="instagram" class="claude-label">Instagram</label>
-                                        <div class="social-input-wrapper">
-                                            <i class="fab fa-instagram social-icon text-pink-500"></i>
-                                            <input type="text" name="instagram" id="instagram" value="{{ old('instagram') }}"
-                                                placeholder="@username"
-                                                class="claude-input @error('instagram') border-red-500 @enderror">
+                                        <label for="tanggal_selesai" class="block text-xs text-gray-300 mb-1.5 font-medium">
+                                            Tanggal Selesai <span class="text-red-400">*</span>
+                                        </label>
+                                        <div class="date-input-wrapper">
+                                            <input type="text" name="tanggal_selesai" id="tanggal_selesai" 
+                                                   class="filter-input cursor-pointer" 
+                                                   placeholder="Pilih Tanggal Selesai"
+                                                   value="{{ old('tanggal_selesai') }}" required>
+                                            <i class="fas fa-calendar-check date-input-icon"></i>
                                         </div>
-                                        @error('instagram')
-                                            <p class="text-red-400 text-xs mt-2 ml-9">{{ $message }}</p>
-                                        @enderror
-                                    </div>
-                                    <div>
-                                        <label for="tiktok" class="claude-label">TikTok</label>
-                                        <div class="social-input-wrapper">
-                                            <i class="fab fa-tiktok social-icon text-blue-400"></i>
-                                            <input type="text" name="tiktok" id="tiktok" value="{{ old('tiktok') }}"
-                                                placeholder="@username"
-                                                class="claude-input @error('tiktok') border-red-500 @enderror">
-                                        </div>
-                                        @error('tiktok')
-                                            <p class="text-red-400 text-xs mt-2 ml-9">{{ $message }}</p>
-                                        @enderror
+                                        @error('tanggal_selesai') <span class="text-red-400 text-xs mt-1 block">{{ $message }}</span> @enderror
                                     </div>
                                 </div>
+                                <span class="text-xs text-gray-400 mt-2 block">
+                                    <i class="fas fa-info-circle text-[#e88968] mr-1"></i> Tentukan rentang waktu aktif pelaksanaan magang peserta.
+                                </span>
                             </div>
+
+                            {{-- VISIBILITAS PUBLIK --}}
+                            @if(auth()->check() && auth()->user()->isAdmin())
+                                <div class="border-t border-[#3a3a3a] pt-4 mt-2">
+                                    <label class="filter-label flex items-center gap-2 mb-2 font-semibold text-white">
+                                        <i class="fas fa-shield-alt text-[#d97757]"></i>
+                                        <span>Privasi & Visibilitas Publik</span>
+                                    </label>
+                                    <label class="flex items-start gap-3 p-3.5 bg-black/20 border border-[#3a3a3a] rounded-xl cursor-pointer hover:border-[#d97757]/40 transition-all">
+                                        <input type="checkbox" name="is_hidden" value="1" 
+                                               {{ old('is_hidden') ? 'checked' : '' }}
+                                               class="w-4 h-4 mt-0.5 rounded border-gray-600 text-[#d97757] focus:ring-[#d97757]/40 bg-[#1a1a1a]">
+                                        <div>
+                                            <span class="text-sm font-medium text-white block">Sembunyikan data peserta ini dari publik</span>
+                                            <span class="text-xs text-gray-400 block mt-0.5">Jika dicentang, peserta ini tidak akan muncul di daftar direktori publik dan hanya bisa dilihat oleh Administrator.</span>
+                                        </div>
+                                    </label>
+                                </div>
+                            @endif
+
                         </div>
 
-                        {{-- Bagian Kesan & Pesan (Full Width) --}}
-                        <div class="border-t border-[#3a3a3a] pt-6 mt-8">
-                            <h3 class="claude-title text-xl text-white mb-4">
-                                <i class="fas fa-comment-dots mr-2"></i>Kesan & Pesan
-                            </h3>
-                            <div class="mb-6">
-                                <label for="kesan" class="claude-label">Kesan Selama Magang</label>
-                                <textarea name="kesan" id="kesan" rows="5"
-                                    class="claude-input @error('kesan') border-red-500 @enderror"
-                                    placeholder="Tulis kesan Anda selama mengikuti program magang di BPS Bantul...">{{ old('kesan') }}</textarea>
-                                <p class="text-gray-400 text-xs mt-2">Maksimal 2000 karakter</p>
+                        {{-- Kolom Kanan: Foto, Portofolio & Kontak --}}
+                        <div class="space-y-6">
+
+                            {{-- Upload Foto Profil --}}
+                            <div>
+                                <label for="foto" class="filter-label mb-2">Foto Profil Peserta <span class="text-red-400">*</span></label>
+                                <input type="file" name="foto" id="foto" accept="image/jpeg,image/png,image/jpg"
+                                    class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 @error('foto') border-red-500 @enderror" 
+                                    onchange="previewImage(event)" required>
+                                <span class="text-xs text-gray-400 mt-1 block">Format: JPG, PNG | Maksimal 2MB</span>
+                                
+                                <div class="mt-3 flex items-center gap-4">
+                                    <img id="preview" class="preview-image" style="display: none;" alt="Preview Foto">
+                                </div>
+                                @error('foto')
+                                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Link Karya / Portofolio --}}
+                            <div>
+                                <label for="link_pekerjaan" class="filter-label mb-2">Link Karya / Portofolio (Opsional)</label>
+                                <textarea name="link_pekerjaan" id="link_pekerjaan" rows="2"
+                                    class="filter-input @error('link_pekerjaan') border-red-500 @enderror"
+                                    placeholder="Contoh: https://drive.google.com/... atau https://github.com/...">{{ old('link_pekerjaan') }}</textarea>
+                                <span class="text-xs text-gray-400 mt-1 block">Tautan Google Drive, GitHub, atau situs portofolio peserta.</span>
+                                @error('link_pekerjaan')
+                                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Media Sosial --}}
+                            <div class="border-t border-[#3a3a3a] pt-4 space-y-4">
+                                <h3 class="claude-title text-lg text-white flex items-center gap-2">
+                                    <i class="fas fa-share-alt text-[#e88968]"></i>
+                                    <span>Kontak & Media Sosial (Opsional)</span>
+                                </h3>
+
+                                <div>
+                                    <label for="whatsapp" class="filter-label mb-1.5 text-xs">WhatsApp</label>
+                                    <div class="flex items-center gap-2.5">
+                                        <i class="fab fa-whatsapp fa-lg text-green-500 w-5 text-center"></i>
+                                        <input type="text" name="whatsapp" id="whatsapp" value="{{ old('whatsapp') }}"
+                                            placeholder="+6281234567890"
+                                            class="filter-input @error('whatsapp') border-red-500 @enderror">
+                                    </div>
+                                    <span class="text-[11px] text-gray-400 mt-1 block">Wajib format internasional dengan +62 (contoh: +6281234567890)</span>
+                                    @error('whatsapp')
+                                        <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="instagram" class="filter-label mb-1.5 text-xs">Instagram</label>
+                                    <div class="flex items-center gap-2.5">
+                                        <i class="fab fa-instagram fa-lg text-pink-500 w-5 text-center"></i>
+                                        <input type="text" name="instagram" id="instagram" value="{{ old('instagram') }}"
+                                            placeholder="@username"
+                                            class="filter-input @error('instagram') border-red-500 @enderror">
+                                    </div>
+                                    @error('instagram')
+                                        <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+
+                                <div>
+                                    <label for="tiktok" class="filter-label mb-1.5 text-xs">TikTok</label>
+                                    <div class="flex items-center gap-2.5">
+                                        <i class="fab fa-tiktok fa-lg text-blue-400 w-5 text-center"></i>
+                                        <input type="text" name="tiktok" id="tiktok" value="{{ old('tiktok') }}"
+                                            placeholder="@username"
+                                            class="filter-input @error('tiktok') border-red-500 @enderror">
+                                    </div>
+                                    @error('tiktok')
+                                        <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    {{-- Bagian Kesan & Pesan (Full Width) --}}
+                    <div class="border-t border-[#3a3a3a] p-6 md:p-8 bg-black/10">
+                        <h3 class="claude-title text-lg text-white mb-4 flex items-center gap-2">
+                            <i class="fas fa-comment-dots text-[#e88968]"></i>
+                            <span>Testimoni Kesan & Pesan (Opsional)</span>
+                        </h3>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div>
+                                <label for="kesan" class="filter-label mb-2">Kesan Selama Magang</label>
+                                <textarea name="kesan" id="kesan" rows="4"
+                                    class="filter-input @error('kesan') border-red-500 @enderror"
+                                    placeholder="Tulis kesan pengalaman selama mengikuti magang di BPS Bantul...">{{ old('kesan') }}</textarea>
                                 @error('kesan')
-                                    <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
+                                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
                                 @enderror
                             </div>
-                            <div class="mb-6">
-                                <label for="pesan" class="claude-label">Pesan & Saran</label>
-                                <textarea name="pesan" id="pesan" rows="5"
-                                    class="claude-input @error('pesan') border-red-500 @enderror"
-                                    placeholder="Tulis pesan atau saran untuk BPS Bantul...">{{ old('pesan') }}</textarea>
-                                <p class="text-gray-400 text-xs mt-2">Maksimal 2000 karakter</p>
-                                @error('pesan')
-                                    <p class="text-red-400 text-xs mt-2">{{ $message }}</p>
-                                @enderror
-                            </div>
-                            <!-- modifikasi - start -->
-                            <!-- CAPTCHA -->
-                            <div class="flex justify-end mb-4">
-                                <div class="g-recaptcha"
-                                    data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}">
-                                </div>
-                            </div>
-        
-                            @error('g-recaptcha-response')
-                                <small style="color:red">{{ $message }}</small>
-                            @enderror
-                            <!-- modifikasi - end -->
-                        </div>
 
-                        {{-- Tombol Aksi (Footer Card) --}}
-                        <div class="flex gap-3 justify-end pt-4 border-t border-[#3a3a3a]">
-                            <a href="{{ route('magang.index') }}" class="claude-button-secondary">
-                                <i class="fas fa-times mr-2"></i>Batal
-                            </a>
-                            <button type="submit" class="claude-button">
-                                <i class="fas fa-save mr-2"></i>Simpan Data
-                            </button>
+                            <div>
+                                <label for="pesan" class="filter-label mb-2">Pesan & Saran</label>
+                                <textarea name="pesan" id="pesan" rows="4"
+                                    class="filter-input @error('pesan') border-red-500 @enderror"
+                                    placeholder="Tulis pesan atau saran untuk BPS Kabupaten Bantul...">{{ old('pesan') }}</textarea>
+                                @error('pesan')
+                                    <p class="text-red-400 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
+                    </div>
+
+                    {{-- Tombol Aksi (Footer Card) --}}
+                    <div class="bg-[#1a1a1a]/70 px-6 py-4 border-t border-[#3a3a3a] flex flex-wrap gap-3 justify-end items-center">
+                        <a href="{{ route('magang.index') }}" class="filter-btn filter-btn-secondary">
+                            <i class="fas fa-times mr-1.5"></i>Batal
+                        </a>
+                        <button type="submit" class="filter-btn filter-btn-primary">
+                            <i class="fas fa-save mr-1.5"></i>Simpan Data Magang
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
-    
-    @push('scripts')
-    <script>
-        // Saya memindahkan script ke @push('scripts') agar dimuat di akhir <body>
-        function previewImage(event) {
-            const preview = document.getElementById('preview');
-            const file = event.target.files[0];
 
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result;
-                    preview.style.display = 'block';
+    {{-- Script Flatpickr & Preview Foto --}}
+    @push('scripts')
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                flatpickr.localize(flatpickr.l10ns.id);
+
+                const minDate = new Date();
+                minDate.setFullYear(minDate.getFullYear() - 2); // Boleh input riwayat alumni hingga 2 tahun lalu
+
+                const maxDate = new Date();
+                maxDate.setMonth(maxDate.getMonth() + 7);
+
+                const mulaiPicker = flatpickr("#tanggal_mulai", {
+                    altInput: true,
+                    altFormat: "j F Y",
+                    dateFormat: "Y-m-d",
+                    minDate: minDate,
+                    maxDate: maxDate,
+                    onChange: function (selectedDates, dateStr) {
+                        selesaiPicker.set('minDate', dateStr);
+                    }
+                });
+
+                const selesaiPicker = flatpickr("#tanggal_selesai", {
+                    altInput: true,
+                    altFormat: "j F Y",
+                    dateFormat: "Y-m-d",
+                    minDate: minDate,
+                    maxDate: maxDate
+                });
+            });
+
+            function previewImage(event) {
+                const preview = document.getElementById('preview');
+                const file = event.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        preview.src = e.target.result;
+                        preview.style.display = 'block';
+                    }
+                    reader.readAsDataURL(file);
+                } else {
+                    preview.style.display = 'none';
                 }
-                reader.readAsDataURL(file);
-            } else {
-                preview.src = '';
-                preview.style.display = 'none';
             }
-        }
-    </script>
-    <!-- modifikasi - start -->
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
-    <!-- modifikasi - end -->
+        </script>
     @endpush
 </x-main-layout>

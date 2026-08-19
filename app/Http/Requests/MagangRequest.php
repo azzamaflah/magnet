@@ -23,11 +23,17 @@ class MagangRequest extends FormRequest
         $isUpdate = $this->isMethod('put') || $this->isMethod('patch');
 
         $rules = [
+            // Posisi Formasi / Lowongan Magang
+            'lowongan_id' => ['nullable', 'exists:lowongans,id'],
+
+            // Email
+            'email' => ['nullable', 'email', 'max:255'],
+
             // Nama: hanya huruf & spasi
-            'nama' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'nama' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s\.,\'\-]+$/'],
 
             // Kampus: hanya huruf & spasi
-            'asal_kampus' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s]+$/'],
+            'asal_kampus' => ['required', 'string', 'max:255'],
 
             // Prodi: bebas string
             'prodi' => ['required', 'string', 'max:255'],

@@ -169,7 +169,20 @@
                             {{-- CONTENT --}}
                             <div class="card-content relative z-10">
                                 <div class="card-header">
-                                    <div class="card-name">{{ $magang->nama }}</div>
+                                    <div class="min-w-0 pr-2">
+                                        <div class="card-name truncate" title="{{ $magang->nama }}">{{ $magang->nama }}</div>
+                                        @if($magang->lowongan)
+                                            <div class="inline-flex items-center gap-1.5 px-2 py-0.5 mt-1 rounded-md text-[11px] font-semibold bg-[#d97757]/25 border border-[#d97757]/40 text-[#f69d7f] backdrop-blur-sm truncate max-w-full" title="{{ $magang->lowongan->judul_posisi }} ({{ $magang->lowongan->divisi }})">
+                                                <i class="fas fa-briefcase text-[10px] flex-shrink-0"></i>
+                                                <span class="truncate">{{ $magang->lowongan->divisi }}</span>
+                                            </div>
+                                        @else
+                                            <div class="inline-flex items-center gap-1.5 px-2 py-0.5 mt-1 rounded-md text-[11px] font-medium bg-white/10 border border-white/15 text-gray-300 backdrop-blur-sm">
+                                                <i class="fas fa-user-graduate text-[10px] flex-shrink-0"></i>
+                                                <span>Umum</span>
+                                            </div>
+                                        @endif
+                                    </div>
                                     @php
                                         $now = \Carbon\Carbon::now();
                                         $mulai = \Carbon\Carbon::parse($magang->tanggal_mulai);
@@ -185,7 +198,7 @@
                                             $statusText = 'Selesai';
                                         }
                                     @endphp
-                                    <div class="status-badge {{ $statusClass }}">
+                                    <div class="status-badge {{ $statusClass }} flex-shrink-0">
                                         <span class="status-dot"></span>
                                         {{ $statusText }}
                                     </div>
@@ -197,7 +210,13 @@
                                     <div class="card-info">
                                         <div class="info-item">
                                             <div class="info-label">Asal Kampus</div>
-                                            <div class="info-value">{{ $magang->asal_kampus }}</div>
+                                            <div class="info-value truncate" title="{{ $magang->asal_kampus }}">{{ $magang->asal_kampus }}</div>
+                                        </div>
+                                        <div class="info-item">
+                                            <div class="info-label">Divisi Magang</div>
+                                            <div class="info-value text-[#f69d7f] font-semibold truncate" title="{{ $magang->lowongan ? $magang->lowongan->judul_posisi . ' (' . $magang->lowongan->divisi . ')' : 'Magang Umum' }}">
+                                                <i class="fas fa-briefcase text-xs mr-1 opacity-80"></i>{{ $magang->lowongan ? $magang->lowongan->divisi : 'Umum' }}
+                                            </div>
                                         </div>
                                         <div class="info-item">
                                             <div class="info-label">Periode</div>

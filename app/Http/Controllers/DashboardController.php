@@ -20,17 +20,25 @@ class DashboardController extends Controller
         //  JIKA USER ADALAH ADMIN
         // ===========================================
         if ($role === 'admin') {
-            $selectedYear = $request->input('year', 
-                (Carbon::now()->year >= 2025) ? 2025 : Carbon::now()->year); 
+            $currentYear = Carbon::now()->year;
+            $selectedYear = $request->input('year', 'all'); 
+            $jsInitialYear = ($selectedYear == 'all') ? $currentYear : (int)$selectedYear;
             
-            $jsInitialYear = ($selectedYear == 'all') ? Carbon::now()->year : $selectedYear;
+            // Mengambil semua tahun yang tersedia dari Magang dan Pendaftaran
+            $yearsMagangMulai      = Magang::select(DB::raw('YEAR(tanggal_mulai) as year'))->distinct()->pluck('year');
+            $yearsMagangSelesai    = Magang::select(DB::raw('YEAR(tanggal_selesai) as year'))->distinct()->pluck('year');
+            $yearsPendaftarMulai   = Pendaftaran::select(DB::raw('YEAR(tanggal_mulai) as year'))->distinct()->pluck('year');
+            $yearsPendaftarCreated = Pendaftaran::select(DB::raw('YEAR(created_at) as year'))->distinct()->pluck('year');
             
-            $yearsMagang    = Pendaftaran::select(DB::raw('YEAR(tanggal_mulai) as year'))->distinct()->pluck('year');
-            $yearsPendaftar = Pendaftaran::select(DB::raw('YEAR(created_at) as year'))->distinct()->pluck('year');
-            
-            $currentYear    = Carbon::now()->year;
-            $availableYears = $yearsMagang->merge($yearsPendaftar)->push($currentYear)
-                                             ->unique()->whereNotNull()->sortDesc();
+            $availableYears = $yearsMagangMulai
+                ->merge($yearsMagangSelesai)
+                ->merge($yearsPendaftarMulai)
+                ->merge($yearsPendaftarCreated)
+                ->push($currentYear)
+                ->unique()
+                ->whereNotNull()
+                ->sortDesc()
+                ->values();
 
             // Status Pendaftar
             $pendaftarQuery = Pendaftaran::query();
@@ -49,56 +57,61 @@ class DashboardController extends Controller
             
             $statusChartData = [$totalPending, $totalApproved, $totalRejected, $totalConditional];
 
-            // Data Pendaftaran & Magang per Periode
+            // Data Pendaftaran & Magang per Bulan (Jan - Des)
             $pendaftaranChartLabels = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-            $pendaftaranChartData   = array_fill(0, 12, 0); 
-            $magangChartData        = array_fill(0, 12, 0);
+            $pendaftaranPerBulan    = array_fill(1, 12, 0);
+            $magangPerBulan         = array_fill(1, 12, 0);
             
             if ($selectedYear != 'all') {
-                $pendaftaranPerBulan = array_fill(1, 12, 0);
-                $magangPerBulan      = array_fill(1, 12, 0);
-
                 $pendaftarData = Pendaftaran::whereYear('created_at', $selectedYear)
                     ->select(DB::raw('MONTH(created_at) as month'), DB::raw('COUNT(*) as count'))
                     ->groupBy('month')
                     ->pluck('count', 'month');
-                
-                foreach ($pendaftarData as $month => $count) {
-                    $pendaftaranPerBulan[$month] = $count;
-                }
-                $pendaftaranChartData = array_values($pendaftaranPerBulan);
 
-                $magangData = Pendaftaran::where('status', 'approved')
-                    ->whereYear('tanggal_mulai', $selectedYear)
+                $magangData = Magang::whereYear('tanggal_mulai', $selectedYear)
                     ->select(DB::raw('MONTH(tanggal_mulai) as month'), DB::raw('COUNT(*) as count'))
                     ->groupBy('month')
                     ->pluck('count', 'month');
+            } else {
+                $pendaftarData = Pendaftaran::select(DB::raw('MONTH(created_at) as month'), DB::raw('COUNT(*) as count'))
+                    ->groupBy('month')
+                    ->pluck('count', 'month');
 
-                foreach ($magangData as $month => $count) {
-                     $magangPerBulan[$month] = $count;
-                }
-                $magangChartData = array_values($magangPerBulan);
+                $magangData = Magang::select(DB::raw('MONTH(tanggal_mulai) as month'), DB::raw('COUNT(*) as count'))
+                    ->groupBy('month')
+                    ->pluck('count', 'month');
             }
+
+            foreach ($pendaftarData as $month => $count) {
+                $pendaftaranPerBulan[$month] = $count;
+            }
+            foreach ($magangData as $month => $count) {
+                $magangPerBulan[$month] = $count;
+            }
+
+            $pendaftaranChartData = array_values($pendaftaranPerBulan);
+            $magangChartData      = array_values($magangPerBulan);
             
-            // Peserta Aktif
-            $activeUsers = Pendaftaran::where('status', 'approved')
-                ->whereDate('tanggal_mulai', '<=', Carbon::now())
-                ->whereDate('tanggal_selesai', '>=', Carbon::now())
+            // Peserta Aktif Saat Ini (dari data Magang aktif)
+            $now = Carbon::now();
+            $activeUsers = Magang::with('lowongan')
+                ->whereDate('tanggal_mulai', '<=', $now)
+                ->whereDate('tanggal_selesai', '>=', $now)
                 ->orderBy('tanggal_selesai', 'asc')
                 ->get();
 
-            $activeUsers = $activeUsers->map(function ($user) {
-                $start = Carbon::parse($user->tanggal_mulai);
-                $end   = Carbon::parse($user->tanggal_selesai);
-                $now   = Carbon::now();
+            $activeUsers = $activeUsers->map(function ($magang) use ($now) {
+                $start = Carbon::parse($magang->tanggal_mulai);
+                $end   = Carbon::parse($magang->tanggal_selesai);
 
                 $duration      = $start->diffInMonths($end);
                 $remainingDays = $now->diffInDays($end, false);
                 
-                $user->remaining_days  = floor($remainingDays);
-                $user->duration_months = ($duration < 1) ? '< 1' : $duration;
+                $magang->nama_pendaftar  = $magang->nama;
+                $magang->remaining_days  = floor($remainingDays);
+                $magang->duration_months = ($duration < 1) ? '< 1' : $duration;
                 
-                return $user;
+                return $magang;
             });
 
             // Statistik Kampus (Sedang Magang vs Selesai)
@@ -120,6 +133,8 @@ class DashboardController extends Controller
                     DB::raw("SUM(CASE WHEN tanggal_mulai > '{$nowDate}' THEN 1 ELSE 0 END) as belum_mulai"),
                     DB::raw("COUNT(*) as total_peserta")
                 )
+                ->whereNotNull('asal_kampus')
+                ->where('asal_kampus', '!=', '')
                 ->groupBy('asal_kampus')
                 ->orderByDesc('total_peserta')
                 ->get();
@@ -128,7 +143,10 @@ class DashboardController extends Controller
             $kampusSedangData   = $kampusStats->pluck('sedang_magang')->map(fn($v) => (int)$v)->toArray();
             $kampusSelesaiData  = $kampusStats->pluck('selesai_magang')->map(fn($v) => (int)$v)->toArray();
 
-            $totalLowonganBuka = Lowongan::where('status', 'buka')->count();
+            $totalLowonganBuka  = Lowongan::where('status', 'buka')->count();
+            $totalAlumni        = Magang::whereDate('tanggal_selesai', '<', $nowDate)->count();
+            $totalKampusCount   = Magang::distinct('asal_kampus')->whereNotNull('asal_kampus')->where('asal_kampus', '!=', '')->count('asal_kampus');
+            $totalPendaftarAll  = Pendaftaran::count();
 
             return view('dashboard', [
                 'role'                   => 'admin',
@@ -143,6 +161,9 @@ class DashboardController extends Controller
                 'activeUsers'            => $activeUsers,
                 'jsInitialYear'          => $jsInitialYear,
                 'totalLowonganBuka'      => $totalLowonganBuka,
+                'totalAlumni'            => $totalAlumni,
+                'totalKampusCount'       => $totalKampusCount,
+                'totalPendaftarAll'      => $totalPendaftarAll,
                 'kampusStats'            => $kampusStats,
                 'kampusChartLabels'      => $kampusChartLabels,
                 'kampusSedangData'       => $kampusSedangData,
