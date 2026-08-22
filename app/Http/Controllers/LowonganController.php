@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\DivisiController;
 use App\Http\Requests\LowonganRequest;
 use App\Models\Lowongan;
 use Illuminate\Http\Request;
@@ -9,17 +10,13 @@ use Illuminate\Http\Request;
 class LowonganController extends Controller
 {
     /**
-     * Daftar divisi resmi di BPS Kabupaten Bantul untuk opsi form.
+     * Ambil daftar divisi yang berlaku dari database (via DivisiController).
+     * Digunakan oleh seluruh metode yang membutuhkan daftar divisi.
      */
-    public static array $divisiList = [
-        'Seksi IPDS (Integrasi Pengolahan & Diseminasi Statistik)',
-        'Seksi IPDS & Nerwilis',
-        'Seksi Statistik Sosial',
-        'Seksi Statistik Distribusi',
-        'Seksi Statistik Produksi',
-        'Seksi Neraca Wilayah & Analisis Statistik (Nerwilis)',
-        'Subbagian Umum',
-    ];
+    private function getDivisiList(): array
+    {
+        return DivisiController::getList();
+    }
 
     /**
      * Display a listing of vacancies.
@@ -56,7 +53,7 @@ class LowonganController extends Controller
         }
 
         $lowongans = $query->latest()->paginate(9)->withQueryString();
-        $divisiList = self::$divisiList;
+        $divisiList = $this->getDivisiList();
 
         return view('lowongan.index', compact('lowongans', 'divisiList'));
     }
@@ -67,7 +64,7 @@ class LowonganController extends Controller
     public function create()
     {
         $this->authorizeAdmin();
-        $divisiList = self::$divisiList;
+        $divisiList = $this->getDivisiList();
 
         return view('lowongan.create', compact('divisiList'));
     }
@@ -115,7 +112,7 @@ class LowonganController extends Controller
     public function edit(Lowongan $lowongan)
     {
         $this->authorizeAdmin();
-        $divisiList = self::$divisiList;
+        $divisiList = $this->getDivisiList();
 
         return view('lowongan.edit', compact('lowongan', 'divisiList'));
     }

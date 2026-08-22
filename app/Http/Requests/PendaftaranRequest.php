@@ -69,13 +69,13 @@ class PendaftaranRequest extends FormRequest
 
         // Validasi Berkas (Kondisional Create vs Update)
         if ($isUpdate) {
-            $rules['surat_permohonan'] = ['nullable', 'file', 'mimes:pdf', 'max:2048'];
-            $rules['surat_kampus']     = ['nullable', 'file', 'mimes:pdf', 'max:2048'];
-            $rules['pas_foto']         = ['nullable', 'file', 'image', 'mimes:jpeg,png,jpg', 'max:1024'];
+            $rules['surat_permohonan'] = ['nullable', 'file', 'mimes:pdf', 'max:1024'];
+            $rules['surat_kampus']     = ['nullable', 'file', 'mimes:pdf', 'max:1024'];
+            $rules['pas_foto']         = ['nullable', 'file', 'image', 'mimes:jpeg,png,jpg', 'max:2048'];
         } else {
-            $rules['surat_permohonan'] = ['required', 'file', 'mimes:pdf', 'max:2048'];
-            $rules['surat_kampus']     = ['required', 'file', 'mimes:pdf', 'max:2048'];
-            $rules['pas_foto']         = ['required', 'file', 'image', 'mimes:jpeg,png,jpg', 'max:1024'];
+            $rules['surat_permohonan'] = ['required', 'file', 'mimes:pdf', 'max:1024'];
+            $rules['surat_kampus']     = ['required', 'file', 'mimes:pdf', 'max:1024'];
+            $rules['pas_foto']         = ['required', 'file', 'image', 'mimes:jpeg,png,jpg', 'max:2048'];
         }
 
         return $rules;
@@ -103,11 +103,11 @@ class PendaftaranRequest extends FormRequest
             'asal_kampus.regex'    => 'Nama kampus hanya boleh berisi huruf dan spasi (tidak boleh angka atau simbol).',
 
             // Validasi File
-            'surat_permohonan.max'   => 'Ukuran surat permohonan maksimal 2MB.',
+            'surat_permohonan.max'   => 'Ukuran surat permohonan maksimal 1MB.',
             'surat_permohonan.mimes' => 'Surat permohonan harus format PDF.',
-            'surat_kampus.max'       => 'Ukuran surat kampus maksimal 2MB.',
+            'surat_kampus.max'       => 'Ukuran surat kampus maksimal 1MB.',
             'surat_kampus.mimes'     => 'Surat kampus harus format PDF.',
-            'pas_foto.max'           => 'Ukuran pas foto maksimal 1MB.',
+            'pas_foto.max'           => 'Ukuran pas foto maksimal 2MB.',
             'pas_foto.mimes'         => 'Pas foto harus format JPEG, PNG, atau JPG.',
             'pas_foto.image'         => 'File harus berupa gambar.',
         ];

@@ -6,6 +6,7 @@ use App\Http\Controllers\PendaftaranController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\LowonganController;
+use App\Http\Controllers\DivisiController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -64,6 +65,13 @@ Route::middleware('auth')->group(function () {
         // Rute Pengaturan Durasi
         Route::get('/settings', [SettingController::class, 'index'])->name('settings.index');
         Route::post('/settings', [SettingController::class, 'update'])->name('settings.update');
+
+        // Rute Manajemen Divisi
+        Route::get('/divisi', [DivisiController::class, 'index'])->name('divisi.index');
+        Route::post('/divisi', [DivisiController::class, 'store'])->name('divisi.store');
+        Route::post('/divisi/update', [DivisiController::class, 'update'])->name('divisi.update');
+        Route::post('/divisi/destroy', [DivisiController::class, 'destroy'])->name('divisi.destroy');
+        Route::post('/divisi/reset', [DivisiController::class, 'reset'])->name('divisi.reset');
     });
 
     // Detail Lowongan Magang (bisa dilihat semua user auth)

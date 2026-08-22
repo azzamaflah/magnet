@@ -109,6 +109,21 @@
                     Pengaturan Magang
                 </span>
             </a>
+
+            {{-- Manajemen Divisi --}}
+            <a href="{{ route('divisi.index') }}"
+                class="flex items-center gap-3 py-2.5 mx-2 rounded-lg text-sm font-medium transition-all duration-200
+                {{ request()->routeIs('divisi.*') ? 'bg-[#d97757]/20 text-[#e88968]' : 'text-gray-300 hover:bg-white/5 hover:text-white' }}"
+                :class="expanded ? 'px-4' : 'px-3 justify-center'"
+                :x-tooltip="!expanded ? 'Manajemen Divisi' : null">
+                <i class="fas fa-sitemap w-5 text-center flex-shrink-0"></i>
+                <span class="whitespace-nowrap" x-show="expanded" x-transition:enter="transition ease-out duration-100"
+                    x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100"
+                    x-transition:leave="transition ease-in duration-100" x-transition:leave-start="opacity-100"
+                    x-transition:leave-end="opacity-0">
+                    Manajemen Divisi
+                </span>
+            </a>
         @endif
     </nav>
 

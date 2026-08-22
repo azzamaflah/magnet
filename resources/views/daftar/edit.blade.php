@@ -103,6 +103,19 @@
                             </div>
 
                             <div>
+                                <label for="email" class="filter-label mb-2">Alamat Email Pendaftar</label>
+                                <div class="relative">
+                                    <input type="email" name="email" id="email" class="filter-input bg-white/5 cursor-not-allowed opacity-80 pl-10" 
+                                           value="{{ $pendaftaran->email ?? auth()->user()->email }}" readonly>
+                                    <i class="fas fa-lock absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-500 text-xs"></i>
+                                </div>
+                                <span class="text-xs text-gray-400 mt-1 block">
+                                    <i class="fas fa-info-circle text-[#e88968] mr-1"></i>
+                                    Terkunci otomatis sesuai akun login Anda.
+                                </span>
+                            </div>
+
+                            <div>
                                 <label for="asal_kampus" class="filter-label mb-2">Asal Kampus</label>
                                 <input type="text" name="asal_kampus" id="asal_kampus" class="filter-input" 
                                        placeholder="Contoh: Universitas Gadjah Mada" value="{{ old('asal_kampus', $pendaftaran->asal_kampus) }}" required>
@@ -175,8 +188,8 @@
                                 @endif
                                 <input type="file" name="surat_permohonan" id="surat_permohonan" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
-                                       accept=".pdf" data-max-size="2">
-                                <span class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah berkas saat ini. Maks 2MB.</span>
+                                       accept=".pdf" data-max-size="1">
+                                <span class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah berkas saat ini. Maks 1MB.</span>
                                 <p class="text-red-400 text-xs mt-1 error-message hidden"></p> 
                                 @error('surat_permohonan') <span class="block text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
@@ -191,8 +204,8 @@
                                 @endif
                                 <input type="file" name="surat_kampus" id="surat_kampus" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
-                                       accept=".pdf" data-max-size="2">
-                                <span class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah berkas saat ini. Maks 2MB.</span>
+                                       accept=".pdf" data-max-size="1">
+                                <span class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah berkas saat ini. Maks 1MB.</span>
                                 <p class="text-red-400 text-xs mt-1 error-message hidden"></p>
                                 @error('surat_kampus') <span class="block text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>
@@ -208,8 +221,8 @@
                                 @endif
                                 <input type="file" name="pas_foto" id="pas_foto" 
                                        class="filter-input file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#d97757]/20 file:text-[#e88968] hover:file:bg-[#d97757]/40 validate-file" 
-                                       accept="image/jpeg,image/png,image/jpg" data-max-size="1">
-                                <span class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah berkas saat ini. Maks 1MB.</span>
+                                       accept="image/jpeg,image/png,image/jpg" data-max-size="2">
+                                <span class="text-xs text-gray-400 mt-1">Kosongkan jika tidak ingin mengubah berkas saat ini. Maks 2MB.</span>
                                 <p class="text-red-400 text-xs mt-1 error-message hidden"></p>
                                 @error('pas_foto') <span class="block text-red-400 text-sm mt-1">{{ $message }}</span> @enderror
                             </div>

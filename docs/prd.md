@@ -86,9 +86,9 @@ graph TD
 ### 4.3. Modul Pendaftaran Magang (FR-REG)
 * **FR-REG-01:** Form pendaftaran mewajibkan isian: Pilihan Posisi Lowongan (opsional/umum), Nama Lengkap, Asal Kampus, Program Studi, Tanggal Mulai, dan Tanggal Selesai.
 * **FR-REG-02:** Pendaftar wajib mengunggah berkas:
-  * Surat Permohonan Magang (PDF, Maks. 2MB).
-  * Surat Pengantar dari Kampus (PDF, Maks. 2MB).
-  * Pas Foto Formal (JPEG/PNG/JPG, Maks. 1MB).
+  * Surat Permohonan Magang (PDF, Maks. 1MB).
+  * Surat Pengantar dari Kampus (PDF, Maks. 1MB).
+  * Pas Foto Formal (JPEG/PNG/JPG, Maks. 2MB).
 * **FR-REG-03 (Dynamic Date Validation):**
   * Tanggal mulai tidak boleh tanggal lampau dan maksimal 7 bulan dari hari ini.
   * Durasi magang (`tanggal_mulai` s.d. `tanggal_selesai`) dihitung otomatis dan divalidasi terhadap ambang batas minimal yang tercatat di tabel `settings` (misal: $\ge 3$ bulan).

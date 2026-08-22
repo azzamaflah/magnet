@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\DivisiController;
+use App\Models\Lowongan;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -9,9 +11,29 @@ use Illuminate\Support\Facades\Log;
 class ChatbotController extends Controller
 {
     /**
-     * System prompt yang mendefinisikan konteks MagBot untuk BPS Bantul.
+     * Bangun system prompt secara dinamis dengan data terbaru dari database.
      */
-    private string $systemPrompt = <<<PROMPT
+    private function buildSystemPrompt(): string
+    {
+        // Ambil daftar divisi terbaru dari database
+        $divisiList   = DivisiController::getList();
+        $divisiString = '';
+        foreach ($divisiList as $i => $divisi) {
+            $divisiString .= ($i + 1) . ". {$divisi}\n";
+        }
+
+        // Ambil lowongan yang sedang buka
+        $lowongans       = Lowongan::where('status', 'buka')->latest()->get();
+        $lowonganString  = '';
+        if ($lowongans->isEmpty()) {
+            $lowonganString = 'Saat ini belum ada lowongan yang dibuka.';
+        } else {
+            foreach ($lowongans as $lw) {
+                $lowonganString .= "- **{$lw->judul_posisi}** ({$lw->divisi}) — Kuota: {$lw->kuota} orang\n";
+            }
+        }
+
+        return <<<PROMPT
 Kamu adalah MagBot, asisten virtual cerdas untuk aplikasi MagNet — Sistem Informasi Manajemen & Pendaftaran Magang BPS (Badan Pusat Statistik) Kabupaten Bantul, Yogyakarta.
 
 TUGAS UTAMAMU:
@@ -23,19 +45,15 @@ INFORMASI TENTANG BPS BANTUL:
 - Program magang terbuka untuk mahasiswa D3/S1/S2 dari seluruh universitas
 - Durasi minimal magang: 3 bulan (dapat berubah sesuai pengaturan admin)
 
-DIVISI YANG TERSEDIA DI BPS BANTUL:
-1. Seksi IPDS (Integrasi Pengolahan & Diseminasi Statistik) — cocok untuk mahasiswa IT, Informatika, Sistem Informasi, Teknik Komputer
-2. Seksi IPDS & Nerwilis — cocok untuk mahasiswa IT + Statistik
-3. Seksi Statistik Sosial — cocok untuk mahasiswa Statistika, Sosiologi, Kesehatan Masyarakat
-4. Seksi Statistik Distribusi — cocok untuk mahasiswa Ekonomi, Manajemen, Statistika
-5. Seksi Statistik Produksi — cocok untuk mahasiswa Pertanian, Ekonomi, Statistika
-6. Seksi Neraca Wilayah & Analisis Statistik (Nerwilis) — cocok untuk mahasiswa Ekonomi Pembangunan, Perencanaan Wilayah
-7. Subbagian Umum — cocok untuk mahasiswa Administrasi, Manajemen, Hukum
+DIVISI YANG TERSEDIA DI BPS BANTUL (data real-time dari sistem):
+{$divisiString}
+LOWONGAN MAGANG YANG SEDANG DIBUKA (data real-time dari sistem):
+{$lowonganString}
 
 DOKUMEN YANG DIPERLUKAN UNTUK MENDAFTAR:
-1. Surat Permohonan Magang (PDF, maksimal 2MB) — dibuat oleh mahasiswa/kampus
-2. Surat Keterangan/Rekomendasi dari Kampus (PDF, maksimal 2MB) — surat resmi dari universitas/fakultas
-3. Pas Foto Formal (JPG/JPEG/PNG, maksimal 1MB)
+1. Surat Permohonan Magang (PDF, maksimal 1MB) — dibuat oleh mahasiswa/kampus
+2. Surat Keterangan/Rekomendasi dari Kampus (PDF, maksimal 1MB) — surat resmi dari universitas/fakultas
+3. Pas Foto Formal (JPG/JPEG/PNG, maksimal 2MB)
 
 ALUR PENDAFTARAN DI MagNet:
 1. Login menggunakan akun Google atau Email & Password
@@ -78,6 +96,7 @@ GAYA KOMUNIKASI:
 - Gunakan emoji secukupnya untuk membuat percakapan lebih hidup 😊
 - Gunakan format poin/daftar jika ada banyak informasi
 PROMPT;
+    }
 
     /**
      * Handle chatbot message from user.
@@ -120,7 +139,7 @@ PROMPT;
             $response = Http::timeout(30)
                 ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={$apiKey}", [
                     'system_instruction' => [
-                        'parts' => [['text' => $this->systemPrompt]],
+                        'parts' => [['text' => $this->buildSystemPrompt()]],
                     ],
                     'contents'           => $contents,
                     'generationConfig'   => [

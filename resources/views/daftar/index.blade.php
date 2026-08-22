@@ -298,148 +298,179 @@
                 </div>
 
                 {{-- 3. TABEL DESKTOP ADMIN --}}
-                <div class="hidden lg:block bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-xl overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left text-gray-300">
-                            <thead class="text-xs text-gray-400 uppercase bg-[#1a1a1a]/70 border-b border-[#3a3a3a]">
+                <div class="hidden lg:block bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-2xl shadow-2xl">
+                    <div>
+                        <table class="w-full text-sm text-left text-gray-300 table-fixed">
+                            <colgroup>
+                                <col class="w-10">
+                                <col class="w-[22%]">
+                                <col class="w-[17%]">
+                                <col class="w-[21%]">
+                                <col class="w-[16%]">
+                                <col class="w-20">
+                                <col class="w-24">
+                                <col class="w-[14%]">
+                            </colgroup>
+                            <thead class="text-[11px] text-gray-400 uppercase bg-[#1a1a1a]/80 border-b border-[#3a3a3a] tracking-wider">
                                 <tr>
-                                    <th scope="col" class="px-5 py-3.5 w-12 text-center">No</th>
-                                    <th scope="col" class="px-5 py-3.5">Pendaftar</th>
-                                    <th scope="col" class="px-5 py-3.5">Formasi Lowongan</th>
-                                    <th scope="col" class="px-5 py-3.5">Asal Kampus & Prodi</th>
-                                    <th scope="col" class="px-5 py-3.5">Rencana Periode</th>
-                                    <th scope="col" class="px-5 py-3.5 text-center">Berkas</th>
-                                    <th scope="col" class="px-5 py-3.5 text-center">Status</th>
-                                    <th scope="col" class="px-5 py-3.5 text-center">Kehadiran</th>
-                                    <th scope="col" class="px-5 py-3.5 text-right">Aksi</th>
+                                    <th scope="col" class="px-3 py-3 text-center">No</th>
+                                    <th scope="col" class="px-3 py-3">Pendaftar</th>
+                                    <th scope="col" class="px-3 py-3">Formasi</th>
+                                    <th scope="col" class="px-3 py-3">Kampus / Prodi</th>
+                                    <th scope="col" class="px-3 py-3">Periode Magang</th>
+                                    <th scope="col" class="px-2 py-3 text-center">Berkas</th>
+                                    <th scope="col" class="px-2 py-3 text-center">Status</th>
+                                    <th scope="col" class="px-2 py-3 text-center">Aksi</th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-[#3a3a3a]">
+                            <tbody class="divide-y divide-[#3a3a3a]/80">
                                 @forelse ($pendaftarans as $pendaftar)
-                                    <tr class="hover:bg-[#ffffff]/5 transition-colors duration-150 group">
-                                        <td class="px-5 py-4 text-center text-gray-400 text-xs font-semibold">
+                                    <tr class="hover:bg-white/[0.04] transition-colors duration-150 group">
+                                        {{-- 1. No --}}
+                                        <td class="px-3 py-3 text-center text-gray-500 text-xs font-semibold align-middle">
                                             {{ $pendaftarans->firstItem() + $loop->index }}
                                         </td>
-                                        <td class="px-5 py-4">
-                                            <div class="flex items-center gap-3">
+
+                                        {{-- 2. Pendaftar --}}
+                                        <td class="px-3 py-3 align-middle">
+                                            <div class="flex items-center gap-2.5">
                                                 @if($pendaftar->pas_foto)
                                                     <img src="{{ asset('storage/' . $pendaftar->pas_foto) }}" alt="{{ $pendaftar->nama_pendaftar }}" 
-                                                         class="w-10 h-10 rounded-full object-cover border border-[#4a4a4a] flex-shrink-0 shadow-sm">
+                                                         class="w-9 h-9 rounded-full object-cover border border-[#4a4a4a] group-hover:border-[#d97757]/60 flex-shrink-0 shadow-sm transition-colors">
                                                 @else
-                                                    <div class="w-10 h-10 rounded-full bg-[#d97757]/20 text-[#e88968] flex items-center justify-center font-bold text-sm flex-shrink-0 border border-[#d97757]/30 shadow-sm">
+                                                    <div class="w-9 h-9 rounded-full bg-[#d97757]/20 text-[#e88968] flex items-center justify-center font-bold text-sm flex-shrink-0 border border-[#d97757]/30 shadow-sm">
                                                         {{ substr($pendaftar->nama_pendaftar, 0, 1) }}
                                                     </div>
                                                 @endif
-                                                <div class="min-w-0">
-                                                    <div class="font-bold text-white group-hover:text-[#e88968] transition-colors truncate max-w-[200px]" title="{{ $pendaftar->nama_pendaftar }}">
+                                                <div class="min-w-0 overflow-hidden">
+                                                    <div class="font-semibold text-sm text-white group-hover:text-[#e88968] transition-colors truncate" title="{{ $pendaftar->nama_pendaftar }}">
                                                         {{ $pendaftar->nama_pendaftar }}
                                                     </div>
-                                                    <div class="text-xs text-gray-400 truncate max-w-[200px]" title="{{ $pendaftar->email ?? '-' }}">
-                                                        {{ $pendaftar->email ?? '-' }}
+                                                    <div class="text-[11px] text-gray-400 truncate flex items-center gap-1 mt-0.5" title="{{ $pendaftar->email ?? '-' }}">
+                                                        <i class="fas fa-envelope text-[9px] text-gray-500"></i>
+                                                        <span>{{ $pendaftar->email ?? '-' }}</span>
                                                     </div>
                                                 </div>
                                             </div>
                                         </td>
-                                        <td class="px-5 py-4">
+
+                                        {{-- 3. Formasi Lowongan --}}
+                                        <td class="px-3 py-3 align-middle">
                                             @if($pendaftar->lowongan)
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#d97757]/15 border border-[#d97757]/35 text-[#f69d7f]">
-                                                    <i class="fas fa-briefcase text-[10px]"></i>
-                                                    <span>{{ $pendaftar->lowongan->divisi }}</span>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-[#d97757]/15 border border-[#d97757]/35 text-[#f69d7f]">
+                                                    <i class="fas fa-briefcase text-[9px]"></i>
+                                                    <span class="truncate max-w-[100px]" title="{{ $pendaftar->lowongan->divisi }}">{{ $pendaftar->lowongan->divisi }}</span>
                                                 </span>
-                                                <span class="text-[11px] text-gray-400 block mt-0.5 truncate max-w-[180px]" title="{{ $pendaftar->lowongan->judul_posisi }}">
+                                                <p class="text-[11px] text-gray-400 mt-0.5 truncate" title="{{ $pendaftar->lowongan->judul_posisi }}">
                                                     {{ $pendaftar->lowongan->judul_posisi }}
-                                                </span>
+                                                </p>
                                             @else
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium bg-white/5 border border-white/10 text-gray-300">
-                                                    <i class="fas fa-user-graduate text-[10px]"></i>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-white/5 border border-white/10 text-gray-300">
+                                                    <i class="fas fa-user-graduate text-[9px]"></i>
                                                     <span>Magang Umum</span>
                                                 </span>
                                             @endif
                                         </td>
-                                        <td class="px-5 py-4">
-                                            <div class="font-semibold text-white truncate max-w-[180px]" title="{{ $pendaftar->asal_kampus }}">
+
+                                        {{-- 4. Asal Kampus & Prodi --}}
+                                        <td class="px-3 py-3 align-middle overflow-hidden">
+                                            <div class="font-medium text-sm text-white truncate" title="{{ $pendaftar->asal_kampus }}">
                                                 {{ $pendaftar->asal_kampus }}
                                             </div>
-                                            <div class="text-xs text-gray-400 truncate max-w-[180px]" title="{{ $pendaftar->prodi ?? '-' }}">
+                                            <div class="text-[11px] text-gray-400 truncate mt-0.5" title="{{ $pendaftar->prodi ?? '-' }}">
                                                 {{ $pendaftar->prodi ?? '-' }}
                                             </div>
                                         </td>
-                                        <td class="px-5 py-4 whitespace-nowrap text-xs">
-                                            <div class="text-white font-medium">
-                                                {{ \Carbon\Carbon::parse($pendaftar->tanggal_mulai)->format('d/m/Y') }} - 
-                                                {{ \Carbon\Carbon::parse($pendaftar->tanggal_selesai)->format('d/m/Y') }}
-                                            </div>
+
+                                        {{-- 5. Rencana Periode --}}
+                                        <td class="px-3 py-3 text-xs align-middle">
                                             @php
-                                                $tMulai = \Carbon\Carbon::parse($pendaftar->tanggal_mulai);
+                                                $tMulai  = \Carbon\Carbon::parse($pendaftar->tanggal_mulai);
                                                 $tSelesai = \Carbon\Carbon::parse($pendaftar->tanggal_selesai);
-                                                $durasi = round($tMulai->diffInDays($tSelesai) / 30);
+                                                $durasi  = max(1, (int) round($tMulai->diffInDays($tSelesai) / 30));
                                             @endphp
-                                            <span class="text-[11px] text-gray-400">
-                                                Durasi: {{ max(1, (int)$durasi) }} Bulan
+                                            <div class="text-white font-medium whitespace-nowrap">
+                                                {{ $tMulai->format('d/m/y') }} &ndash; {{ $tSelesai->format('d/m/y') }}
+                                            </div>
+                                            <span class="inline-block text-[11px] text-gray-400 bg-white/5 px-1.5 py-0.5 rounded mt-0.5 border border-white/5 whitespace-nowrap">
+                                                {{ $durasi }} Bulan
                                             </span>
                                         </td>
-                                        <td class="px-5 py-4 text-center">
-                                            <div class="flex items-center justify-center gap-2">
+
+                                        {{-- 6. Berkas PDF + Status + Kehadiran + Aksi (compact) --}}
+                                        <td class="px-2 py-3 text-center align-middle">
+                                            <div class="flex flex-col items-center gap-1">
                                                 @if($pendaftar->surat_permohonan)
                                                     <a href="{{ asset('storage/' . $pendaftar->surat_permohonan) }}" target="_blank" 
-                                                       class="w-7 h-7 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500/30 flex items-center justify-center transition-colors"
-                                                       title="Unduh Surat Permohonan (PDF)">
-                                                        <i class="fas fa-file-pdf text-xs"></i>
+                                                       class="w-7 h-7 rounded-lg bg-red-500/15 border border-red-500/30 text-red-400 hover:bg-red-500/30 flex items-center justify-center transition-all"
+                                                       title="Preview Surat Permohonan">
+                                                        <i class="fas fa-file-pdf text-[10px]"></i>
                                                     </a>
                                                 @endif
                                                 @if($pendaftar->surat_kampus)
                                                     <a href="{{ asset('storage/' . $pendaftar->surat_kampus) }}" target="_blank" 
-                                                       class="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 flex items-center justify-center transition-colors"
-                                                       title="Unduh Surat Pengantar Kampus (PDF)">
-                                                        <i class="fas fa-university text-xs"></i>
+                                                       class="w-7 h-7 rounded-lg bg-blue-500/15 border border-blue-500/30 text-blue-400 hover:bg-blue-500/30 flex items-center justify-center transition-all"
+                                                       title="Preview Surat Kampus">
+                                                        <i class="fas fa-university text-[10px]"></i>
                                                     </a>
+                                                @endif
+                                                @if(!$pendaftar->surat_permohonan && !$pendaftar->surat_kampus)
+                                                    <span class="text-gray-600 text-xs">-</span>
                                                 @endif
                                             </div>
                                         </td>
-                                        <td class="px-5 py-4 text-center">
+
+                                        {{-- 7. Status --}}
+                                        <td class="px-2 py-3 text-center align-middle">
                                             @if ($pendaftar->status == 'pending')
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-yellow-500/15 text-yellow-300 border border-yellow-500/30">
-                                                    <i class="fas fa-clock text-[10px]"></i> Menunggu
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-yellow-500/15 text-yellow-300 border border-yellow-500/30 whitespace-nowrap">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-pulse flex-shrink-0"></span>
+                                                    Menunggu
                                                 </span>
                                             @elseif ($pendaftar->status == 'approved')
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-green-500/15 text-green-300 border border-green-500/30">
-                                                    <i class="fas fa-check-circle text-[10px]"></i> Disetujui
-                                                </span>
-                                            @elseif ($pendaftar->status == 'conditional')
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30">
-                                                    <i class="fas fa-info-circle text-[10px]"></i> Bersyarat
-                                                </span>
-                                            @else
-                                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-red-500/15 text-red-300 border border-red-500/30">
-                                                    <i class="fas fa-times-circle text-[10px]"></i> Ditolak
-                                                </span>
-                                            @endif
-                                        </td>
-                                        <td class="px-5 py-4 text-center">
-                                            @if ($pendaftar->status == 'approved')
-                                                @if ($pendaftar->konfirmasi_at)
-                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium text-green-400 bg-green-500/10 border border-green-500/20">
-                                                        <i class="fas fa-check"></i> Hadir
+                                                <div class="space-y-1">
+                                                    <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-green-500/15 text-green-300 border border-green-500/30 whitespace-nowrap">
+                                                        <i class="fas fa-check-circle text-[9px]"></i>
+                                                        Disetujui
                                                     </span>
-                                                @else
-                                                    <span class="text-gray-500 text-xs italic">Belum</span>
-                                                @endif
+                                                    {{-- Kehadiran inline --}}
+                                                    @if ($pendaftar->konfirmasi_at)
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium text-green-400 bg-green-500/10 border border-green-500/20 whitespace-nowrap">
+                                                            <i class="fas fa-check text-[9px]"></i> Hadir
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-medium text-gray-400 bg-white/5 border border-white/5 whitespace-nowrap">
+                                                            <i class="fas fa-clock text-[9px]"></i> Belum
+                                                        </span>
+                                                    @endif
+                                                </div>
+                                            @elseif ($pendaftar->status == 'conditional')
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-blue-500/15 text-blue-300 border border-blue-500/30 whitespace-nowrap">
+                                                    <i class="fas fa-info-circle text-[9px]"></i>
+                                                    Bersyarat
+                                                </span>
                                             @else
-                                                <span class="text-gray-600">-</span>
+                                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold bg-red-500/15 text-red-300 border border-red-500/30 whitespace-nowrap">
+                                                    <i class="fas fa-times-circle text-[9px]"></i>
+                                                    Ditolak
+                                                </span>
                                             @endif
                                         </td>
-                                        <td class="px-5 py-4 text-right whitespace-nowrap">
-                                            <div class="flex items-center justify-end gap-2">
+
+                                        {{-- 8. Aksi (Review + Hapus) --}}
+                                        <td class="px-2 py-3 text-center align-middle whitespace-nowrap">
+                                            <div class="flex items-center justify-center gap-1.5">
                                                 <a href="{{ route('daftar.show', $pendaftar) }}" 
-                                                   class="p-2 text-gray-300 hover:text-[#d97757] bg-white/5 hover:bg-[#d97757]/15 rounded-lg transition-colors" 
-                                                   title="Detail Berkas & Review">
-                                                    <i class="fas fa-eye"></i>
+                                                   class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold bg-[#d97757]/15 hover:bg-[#d97757]/30 text-[#f69d7f] border border-[#d97757]/30 hover:border-[#d97757]/60 transition-all shadow-sm" 
+                                                   title="Tinjau Detail Berkas">
+                                                    <i class="fas fa-eye text-[10px]"></i>
+                                                    <span>Review</span>
                                                 </a>
                                                 <form action="{{ route('daftar.destroy', $pendaftar->id) }}" method="POST" class="inline-block delete-form" data-name="{{ $pendaftar->nama_pendaftar }}">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="button" class="p-2 text-gray-400 hover:text-red-400 bg-white/5 hover:bg-red-500/15 rounded-lg transition-colors btn-delete" title="Hapus Data">
-                                                        <i class="fas fa-trash-alt"></i>
+                                                    <button type="button" class="w-7 h-7 rounded-lg text-gray-400 hover:text-red-400 bg-white/5 hover:bg-red-500/15 border border-white/5 hover:border-red-500/30 flex items-center justify-center transition-colors btn-delete" title="Hapus">
+                                                        <i class="fas fa-trash-alt text-[10px]"></i>
                                                     </button>
                                                 </form>
                                             </div>
@@ -447,10 +478,12 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td colspan="9" class="text-center py-12 text-gray-400">
+                                        <td colspan="8" class="text-center py-16 text-gray-400">
                                             <div class="flex flex-col items-center justify-center gap-2">
-                                                <i class="fas fa-folder-open text-4xl text-gray-600 mb-1"></i>
-                                                <p class="text-base font-semibold text-white">Tidak Ada Data Pendaftaran</p>
+                                                <div class="w-16 h-16 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-1">
+                                                    <i class="fas fa-folder-open text-2xl text-gray-500"></i>
+                                                </div>
+                                                <p class="text-base font-bold text-white">Tidak Ada Data Pendaftaran</p>
                                                 <p class="text-xs text-gray-400 max-w-sm text-center">
                                                     Coba sesuaikan kata kunci pencarian atau reset filter untuk menampilkan data pendaftaran lainnya.
                                                 </p>
@@ -460,20 +493,26 @@
                                 @endforelse
                             </tbody>
                         </table>
-                        
-                        @if($pendaftarans->hasPages())
-                            <div class="border-t border-[#3a3a3a] bg-[#1a1a1a]/40 px-5 py-3.5">
-                                <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                                    <div class="text-xs text-gray-400">
-                                        Menampilkan {{ $pendaftarans->firstItem() ?? 0 }} s.d. {{ $pendaftarans->lastItem() ?? 0 }} dari {{ $pendaftarans->total() }} pendaftar
-                                    </div>
-                                    <div class="max-w-full overflow-x-auto">
-                                        {{ $pendaftarans->links('vendor.pagination.magnet') }}
-                                    </div>
+                    </div>
+                    
+                    {{-- Pagination Footer Bar (Fixed to Card Container, Tidak ikut tergeser saat tabel di-scroll) --}}
+                    @if($pendaftarans->hasPages())
+                        <div class="border-t border-[#3a3a3a] bg-[#1a1a1a]/80 px-6 py-4">
+                            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                                <div class="flex items-center gap-2.5 text-xs text-gray-400">
+                                    <span class="inline-flex items-center justify-center w-7 h-7 rounded-xl bg-white/5 border border-white/10 text-[#e88968]">
+                                        <i class="fas fa-users text-xs"></i>
+                                    </span>
+                                    <span>
+                                        Menampilkan <strong class="text-white font-semibold">{{ $pendaftarans->firstItem() ?? 0 }} - {{ $pendaftarans->lastItem() ?? 0 }}</strong> dari <strong class="text-[#e88968] font-bold">{{ $pendaftarans->total() }}</strong> pendaftar
+                                    </span>
+                                </div>
+                                <div class="flex-shrink-0">
+                                    {{ $pendaftarans->onEachSide(1)->links('vendor.pagination.magnet') }}
                                 </div>
                             </div>
-                        @endif
-                    </div>
+                        </div>
+                    @endif
                 </div>
 
                 {{-- 4. VERSI MOBILE ADMIN --}}
@@ -559,7 +598,7 @@
 
                     @if($pendaftarans->hasPages())
                         <div class="mt-4 pt-3 border-t border-[#3a3a3a] flex justify-center">
-                            {{ $pendaftarans->links('vendor.pagination.magnet') }}
+                            {{ $pendaftarans->onEachSide(1)->links('vendor.pagination.magnet') }}
                         </div>
                     @endif
                 </div>
