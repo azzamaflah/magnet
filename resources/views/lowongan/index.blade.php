@@ -51,14 +51,19 @@
                         <label class="block text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
                             <i class="fas fa-building mr-1"></i> Divisi / Seksi
                         </label>
-                        <select name="divisi" class="w-full bg-[#1a1a1a] border border-[#4a4a4a] text-white rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-[#d97757]">
-                            <option value="all">Semua Divisi</option>
-                            @foreach($divisiList as $divisi)
-                                <option value="{{ $divisi }}" {{ request('divisi') == $divisi ? 'selected' : '' }}>
-                                    {{ $divisi }}
-                                </option>
-                            @endforeach
-                        </select>
+                        <div class="relative">
+                            <select name="divisi" class="w-full bg-[#1a1a1a] border border-[#4a4a4a] text-white rounded-lg px-4 py-2.5 pr-10 text-sm focus:outline-none focus:border-[#d97757] appearance-none cursor-pointer">
+                                <option value="all" class="bg-[#1f1f1f] text-white">Semua Divisi</option>
+                                @foreach($divisiList as $divisi)
+                                    <option value="{{ $divisi }}" class="bg-[#1f1f1f] text-white" {{ request('divisi') == $divisi ? 'selected' : '' }}>
+                                        {{ $divisi }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-gray-400">
+                                <i class="fas fa-chevron-down text-xs"></i>
+                            </div>
+                        </div>
                     </div>
 
                     {{-- Tombol Filter & Reset --}}
