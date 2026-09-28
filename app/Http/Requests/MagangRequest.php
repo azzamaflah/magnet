@@ -32,8 +32,8 @@ class MagangRequest extends FormRequest
             // Nama: hanya huruf & spasi
             'nama' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z\s\.,\'\-]+$/'],
 
-            // Kampus: hanya huruf & spasi
-            'asal_kampus' => ['required', 'string', 'max:255'],
+            // Kampus: huruf, angka, spasi & simbol umum nama kampus
+            'asal_kampus' => ['required', 'string', 'max:255', 'regex:/^[a-zA-Z0-9\s\.,\(\)\'\"\/\-]+$/'],
 
             // Prodi: bebas string
             'prodi' => ['required', 'string', 'max:255'],
