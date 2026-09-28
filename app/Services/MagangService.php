@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Models\Magang;
 use App\Models\Pendaftaran;
 use App\Models\User;
-use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class MagangService
@@ -82,19 +81,8 @@ class MagangService
     }
 
     /**
-     * Hitung durasi bulan antara tanggal mulai dan selesai.
-     */
-    public function calculateDurationMonths(string $startDate, string $endDate): int
-    {
-        $mulai   = Carbon::parse($startDate);
-        $selesai = Carbon::parse($endDate);
-
-        $periode = (int) round($mulai->diffInDays($selesai) / 30);
-        return $periode === 0 ? 1 : $periode;
-    }
-
-    /**
      * Simpan data peserta magang baru.
+     * Catatan: periode_bulan & status dihitung otomatis oleh Magang::boot() saat save().
      */
     public function createMagang(array $validated, $fotoFile): Magang
     {
@@ -102,16 +90,12 @@ class MagangService
             $validated['foto'] = $this->fileService->upload($fotoFile, 'foto_magang');
         }
 
-        $validated['periode_bulan'] = $this->calculateDurationMonths(
-            $validated['tanggal_mulai'],
-            $validated['tanggal_selesai']
-        );
-
         return Magang::create($validated);
     }
 
     /**
      * Update data peserta magang dan sinkronisasi foto dengan pendaftaran terkait.
+     * Catatan: periode_bulan & status dihitung otomatis oleh Magang::boot() saat save().
      */
     public function updateMagang(Magang $magang, array $validated, $fotoFile): Magang
     {
@@ -121,8 +105,10 @@ class MagangService
                 $newPhotoPath   = $this->fileService->upload($fotoFile, 'foto_magang');
                 $validated['foto'] = $newPhotoPath;
 
-                // Sinkronkan ke pendaftaran terkait jika ada
-                $pendaftaran = Pendaftaran::where('user_id', $magang->user_id)->first();
+                // Sinkronkan foto ke pendaftaran approved yang terkait jika ada
+                $pendaftaran = Pendaftaran::where('user_id', $magang->user_id)
+                    ->where('status', 'approved')
+                    ->first();
                 if ($pendaftaran) {
                     $oldPendaftaranPhoto = $pendaftaran->pas_foto;
                     $pendaftaran->update(['pas_foto' => $newPhotoPath]);
@@ -133,13 +119,6 @@ class MagangService
                 }
 
                 $this->fileService->delete($oldMagangPhoto);
-            }
-
-            if (!empty($validated['tanggal_mulai']) && !empty($validated['tanggal_selesai'])) {
-                $validated['periode_bulan'] = $this->calculateDurationMonths(
-                    $validated['tanggal_mulai'],
-                    $validated['tanggal_selesai']
-                );
             }
 
             $magang->update($validated);
@@ -168,7 +147,12 @@ class MagangService
                 $this->fileService->delete($magang->foto);
             }
 
-            $pendaftaran = Pendaftaran::where('user_id', $magang->user_id)->first();
+            // Fix Bug #1: cari pendaftaran yang approved milik user ini,
+            // bukan sekadar ->first() yang bisa mengambil pendaftaran yang salah.
+            $pendaftaran = Pendaftaran::where('user_id', $magang->user_id)
+                ->where('status', 'approved')
+                ->first();
+
             if ($pendaftaran) {
                 $pendaftaran->update([
                     'status'  => 'rejected',

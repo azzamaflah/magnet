@@ -149,7 +149,7 @@ class MagangController extends Controller
      */
     private function authorizeOwnerOrAdmin(Magang $magang): void
     {
-        if (!auth()->user()->isAdmin() && $magang->user_id != auth()->id()) {
+        if (!auth()->user()->isAdmin() && $magang->user_id !== auth()->id()) {
             abort(403, 'AKSES DITOLAK. Anda hanya dapat mengedit data Anda sendiri.');
         }
     }
