@@ -123,7 +123,8 @@ PROMPT;
         ];
 
         try {
-            $response = Http::timeout(30)
+            $response = Http::timeout(25)
+                ->retry(2, 600, throw: false)
                 ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key={$apiKey}", [
                     'system_instruction' => [
                         'parts' => [['text' => $this->buildSystemPrompt()]],
@@ -149,15 +150,82 @@ PROMPT;
 
             Log::warning('Gemini API error', ['status' => $response->status(), 'body' => $response->body()]);
 
+            // Gunakan fallback cerdas untuk pertanyaan umum jika API Google overload (503/429)
+            $fallbackReply = $this->getFallbackReply($message);
+            if ($fallbackReply) {
+                return ['reply' => $fallbackReply];
+            }
+
             return [
-                'reply' => 'Maaf, ada gangguan koneksi ke server MagBot. Silakan coba lagi dalam beberapa saat. 🙏',
+                'reply' => 'Maaf, ada gangguan koneksi ke server MagBot saat ini. Silakan coba lagi dalam beberapa saat atau tanyakan hal terkait dokumen/alur pendaftaran magang. 🙏',
             ];
         } catch (\Exception $e) {
             Log::error('ChatbotService error: ' . $e->getMessage());
 
+            $fallbackReply = $this->getFallbackReply($message);
+            if ($fallbackReply) {
+                return ['reply' => $fallbackReply];
+            }
+
             return [
-                'reply' => 'Terjadi kesalahan teknis. Silakan coba lagi nanti. 🔧',
+                'reply' => 'Terjadi kesalahan teknis koneksi. Silakan coba lagi nanti. 🔧',
             ];
         }
+    }
+
+    /**
+     * Fallback cerdas berbasis pengetahuan lokal MagNet ketika server eksternal Google Gemini sedang 503 / overload.
+     */
+    public function getFallbackReply(string $message): ?string
+    {
+        $lower = strtolower($message);
+
+        // 1. Dokumen / Syarat Berkas
+        if (str_contains($lower, 'dokumen') || str_contains($lower, 'syarat') || str_contains($lower, 'berkas') || str_contains($lower, 'persyaratan')) {
+            return "Untuk mendaftar program magang di BPS Kabupaten Bantul melalui MagNet, berikut dokumen persyaratan yang wajib disiapkan:\n\n" .
+                "1. **Surat Permohonan Magang** (Format PDF, maksimal 1 MB) — Dibuat oleh mahasiswa atau pihak kampus.\n" .
+                "2. **Surat Keterangan / Pengantar Kampus** (Format PDF, maksimal 1 MB) — Surat resmi rekomendasi dari universitas/fakultas.\n" .
+                "3. **Pas Foto Formal** (Format JPG/JPEG/PNG, maksimal 2 MB) — Pas foto terbaru berpakaian rapi.\n\n" .
+                "Pastikan format dan ukuran file sesuai sebelum mengunggah pada formulir pendaftaran ya! 😊";
+        }
+
+        // 2. Cara Daftar / Alur Pendaftaran
+        if (str_contains($lower, 'cara daftar') || str_contains($lower, 'alur') || str_contains($lower, 'cara mendaftar') || str_contains($lower, 'mendaftar')) {
+            return "Alur pendaftaran magang di BPS Kabupaten Bantul sangat mudah:\n\n" .
+                "1. **Pilih Formasi:** Buka menu **Lowongan Magang** untuk melihat kuota formasi atau daftar mandiri di **Pendaftaran Magang**.\n" .
+                "2. **Isi Formulir:** Lengkapi nama, universitas, program studi, dan tanggal rencana mulai-selesai magang.\n" .
+                "3. **Unggah Dokumen:** Unggah Surat Permohonan (PDF), Surat Kampus (PDF), dan Pas Foto.\n" .
+                "4. **Kirim & Pantau:** Kirim formulir dan pantau status seleksimu (*Pending / Disetujui / Bersyarat / Ditolak*) secara real-time di sistem. 😊";
+        }
+
+        // 3. Status Conditional / Bersyarat / Revisi
+        if (str_contains($lower, 'conditional') || str_contains($lower, 'bersyarat') || str_contains($lower, 'revisi') || str_contains($lower, 'perbaikan')) {
+            return "Status **Disetujui Bersyarat (Conditional)** berarti pengajuan magangmu pada dasarnya diterima, namun ada dokumen atau syarat tambahan yang perlu kamu lengkapi sesuai instruksi verifikator.\n\n" .
+                "💡 **Langkah yang harus dilakukan:**\n" .
+                "1. Buka menu **Pendaftaran Magang** atau halaman detail pendaftaranmu.\n" .
+                "2. Baca **Catatan Verifikator** mengenai kekurangan dokumen.\n" .
+                "3. Klik tombol **Perbaiki Berkas Sekarang** untuk mengunggah ulang dokumen yang diminta.\n" .
+                "4. Setelah disimpan, berkasmu akan otomatis ditinjau ulang oleh tim admin BPS. 😊";
+        }
+
+        // 4. Divisi / Seksi di BPS Bantul
+        if (str_contains($lower, 'divisi') || str_contains($lower, 'seksi') || str_contains($lower, 'bagian') || str_contains($lower, 'formasi')) {
+            $divisiList = DivisiController::getList();
+            $listStr = '';
+            foreach ($divisiList as $i => $d) {
+                $listStr .= ($i + 1) . ". {$d}\n";
+            }
+            return "Divisi kerja yang tersedia di BPS Kabupaten Bantul meliputi:\n\n{$listStr}\n" .
+                "Kamu dapat melihat rincian tugas dan sisa kuota lowongan tiap seksi melalui menu **Lowongan Magang**. 😊";
+        }
+
+        // 5. Alamat / Lokasi / Jam Kerja
+        if (str_contains($lower, 'alamat') || str_contains($lower, 'lokasi') || str_contains($lower, 'kantor') || str_contains($lower, 'dimana')) {
+            return "Kantor BPS (Badan Pusat Statistik) Kabupaten Bantul beralamat di:\n\n" .
+                "📍 **Jl. Jend. Sudirman No. 50, Bantul, Daerah Istimewa Yogyakarta**\n\n" .
+                "Program magang terbuka bagi mahasiswa aktif jenjang D3/S1/S2 dari seluruh perguruan tinggi. 😊";
+        }
+
+        return null;
     }
 }
