@@ -278,7 +278,7 @@ class PendaftaranService
 
                 return [
                     'success' => true,
-                    'message' => 'Pendaftaran disetujui! Data telah dipindahkan ke daftar peserta magang & notifikasi email terkirim.',
+                    'message' => 'Pendaftaran disetujui! Data telah dipindahkan ke daftar peserta magang dan notifikasi email terkirim.',
                 ];
             }
 
