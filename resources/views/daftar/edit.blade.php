@@ -67,6 +67,31 @@
 
         <div class="max-w-5xl mx-auto py-8 px-4 sm:px-6">
             
+            {{-- Banner Catatan Revisi / Bersyarat --}}
+            @if($pendaftaran->status === 'conditional' || $pendaftaran->remarks)
+                <div class="mb-6 p-5 bg-blue-500/10 border border-blue-500/30 rounded-2xl flex items-start gap-4 shadow-xl">
+                    <div class="w-10 h-10 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-lg flex-shrink-0 mt-0.5">
+                        <i class="fas fa-exclamation-circle"></i>
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-sm text-blue-200 flex items-center gap-2">
+                                <span>Instruksi Perbaikan Berkas dari Verifikator BPS</span>
+                                <span class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-blue-500/20 text-blue-300 border border-blue-500/30">
+                                    Disetujui Bersyarat
+                                </span>
+                            </h4>
+                        </div>
+                        <div class="text-xs text-blue-100 leading-relaxed bg-[#1a1a1a]/80 p-3.5 rounded-xl border border-blue-500/25 whitespace-pre-wrap">
+                            {{ $pendaftaran->remarks ?? 'Silakan periksa dan perbaiki berkas persyaratan yang diminta di bawah ini.' }}
+                        </div>
+                        <p class="text-[11px] text-gray-400">
+                            <i class="fas fa-info-circle text-[#e88968] mr-1"></i> Setelah berkas perbaikan disimpan, status akan otomatis disetel kembali ke <strong>Menunggu Verifikasi (Pending)</strong> untuk ditinjau ulang oleh tim admin.
+                        </p>
+                    </div>
+                </div>
+            @endif
+
             <div class="bg-[#2a2a2a]/60 backdrop-blur-md border border-[#3a3a3a] rounded-xl shadow-lg overflow-hidden">
                 
                 <form method="POST" action="{{ route('daftar.update', $pendaftaran) }}" enctype="multipart/form-data" id="pendaftaranEditForm">

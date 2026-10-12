@@ -786,20 +786,28 @@
 
                             @elseif($pendaftar->status == 'conditional')
                                 <div class="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-6 shadow-lg">
-                                    <div class="flex items-center gap-4">
-                                        <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl flex-shrink-0">
-                                            <i class="fas fa-info-circle"></i>
+                                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                        <div class="flex items-start sm:items-center gap-4">
+                                            <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl flex-shrink-0 mt-1 sm:mt-0">
+                                                <i class="fas fa-info-circle"></i>
+                                            </div>
+                                            <div>
+                                                <h4 class="text-base font-bold text-blue-200">Pendaftaran Disetujui Bersyarat</h4>
+                                                <p class="text-xs text-blue-300/80 mt-0.5">
+                                                    Terdapat beberapa syarat tambahan atau perbaikan berkas yang perlu Anda lengkapi:
+                                                </p>
+                                                @if($pendaftar->remarks)
+                                                    <div class="mt-2.5 p-3 bg-[#1a1a1a] rounded-xl border border-blue-500/30 text-xs text-white">
+                                                        <strong>Catatan Verifikator:</strong> {{ $pendaftar->remarks }}
+                                                    </div>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h4 class="text-base font-bold text-blue-200">Pendaftaran Disetujui Bersyarat</h4>
-                                            <p class="text-xs text-blue-300/80 mt-0.5">
-                                                Terdapat beberapa syarat tambahan yang perlu Anda penuhi:
-                                            </p>
-                                            @if($pendaftar->remarks)
-                                                <div class="mt-3 p-3 bg-[#1a1a1a] rounded-xl border border-blue-500/30 text-xs text-white">
-                                                    <strong>Catatan Admin:</strong> {{ $pendaftar->remarks }}
-                                                </div>
-                                            @endif
+                                        <div class="w-full sm:w-auto flex-shrink-0 pt-2 sm:pt-0">
+                                            <a href="{{ route('daftar.edit', $pendaftar) }}" class="claude-button w-full sm:w-auto px-5 py-2.5 text-xs font-bold whitespace-nowrap shadow-lg shadow-blue-500/20 inline-flex items-center justify-center gap-2">
+                                                <i class="fas fa-edit"></i>
+                                                <span>Perbaiki Berkas Sekarang</span>
+                                            </a>
                                         </div>
                                     </div>
                                 </div>

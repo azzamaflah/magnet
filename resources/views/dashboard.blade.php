@@ -901,7 +901,36 @@
                                 @endif
                             </div>
 
-                            <p class="text-xs text-gray-400 mt-6 leading-relaxed">
+                            {{-- Tindakan Cepat Berdasarkan Status --}}
+                            @if($pendaftaran->status == 'conditional')
+                                <div class="mt-4 p-3.5 bg-blue-500/10 border border-blue-500/30 rounded-xl space-y-2.5">
+                                    <div class="flex items-center gap-2 text-xs font-bold text-blue-300">
+                                        <i class="fas fa-exclamation-circle text-blue-400"></i>
+                                        <span>Perbaikan Berkas Diperlukan:</span>
+                                    </div>
+                                    @if($pendaftaran->remarks)
+                                        <p class="text-xs text-blue-100/90 leading-relaxed bg-[#1a1a1a]/80 p-2.5 rounded-lg border border-blue-500/20">
+                                            {{ $pendaftaran->remarks }}
+                                        </p>
+                                    @endif
+                                    <a href="{{ route('daftar.edit', $pendaftaran) }}" class="claude-button w-full py-2 text-xs font-bold inline-flex items-center justify-center gap-1.5 shadow-md shadow-blue-500/20">
+                                        <i class="fas fa-edit"></i>
+                                        <span>Perbaiki Berkas Sekarang</span>
+                                    </a>
+                                </div>
+                            @elseif($pendaftaran->status == 'approved' && !$pendaftaran->konfirmasi_at)
+                                <div class="mt-4 p-3.5 bg-green-500/10 border border-green-500/30 rounded-xl space-y-2.5">
+                                    <p class="text-xs text-green-200">
+                                        Mohon lakukan konfirmasi kehadiran sebelum periode magang dimulai:
+                                    </p>
+                                    <a href="{{ route('daftar.konfirmasi', $pendaftaran) }}" class="claude-button w-full py-2 text-xs font-bold inline-flex items-center justify-center gap-1.5 shadow-md shadow-green-500/20">
+                                        <i class="fas fa-check"></i>
+                                        <span>Konfirmasi Kehadiran</span>
+                                    </a>
+                                </div>
+                            @endif
+
+                            <p class="text-xs text-gray-400 mt-5 leading-relaxed">
                                 Cek menu <a href="{{ route('daftar.index') }}" class="text-[#e88968] underline hover:text-white">"Pendaftaran Magang"</a> untuk melihat detail berkas atau riwayat perubahan.
                             </p>
 

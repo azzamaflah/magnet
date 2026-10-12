@@ -23,8 +23,8 @@
                         </div>
                     </div>
 
-                    {{-- Status Badge Header --}}
-                    <div>
+                    {{-- Status Badge & Action Buttons Header --}}
+                    <div class="flex items-center gap-2.5 flex-wrap">
                         @if ($pendaftaran->status == 'pending')
                             <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold bg-yellow-500/15 text-yellow-300 border border-yellow-500/30 shadow-sm">
                                 <span class="w-2 h-2 rounded-full bg-yellow-400 animate-pulse"></span>
@@ -45,6 +45,15 @@
                                 <i class="fas fa-times-circle text-xs"></i>
                                 Berkas Ditolak
                             </span>
+                        @endif
+
+                        {{-- Tombol Revisi / Edit untuk Pemilik Pendaftaran --}}
+                        @if((!auth()->user()->isAdmin() || $pendaftaran->user_id === auth()->id()) && in_array($pendaftaran->status, ['conditional', 'pending']))
+                            <a href="{{ route('daftar.edit', $pendaftaran) }}" 
+                               class="claude-button px-3.5 py-1.5 text-xs font-bold inline-flex items-center gap-1.5 shadow-md shadow-[#d97757]/20">
+                                <i class="fas fa-edit"></i>
+                                <span>{{ $pendaftaran->status === 'conditional' ? 'Perbaiki / Revisi Berkas' : 'Edit Berkas' }}</span>
+                            </a>
                         @endif
                     </div>
                 </div>
@@ -325,6 +334,87 @@
                             </div>
                         </form>
                     </div>
+                    @endif
+
+                    {{-- 4. Panel Informasi & Tindakan Khusus Peserta / Mahasiswa --}}
+                    @if(!auth()->user()->isAdmin())
+                        @if($pendaftaran->status === 'conditional')
+                            <div class="bg-blue-500/10 border border-blue-500/30 rounded-2xl p-6 shadow-xl">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div class="flex items-start sm:items-center gap-4">
+                                        <div class="w-12 h-12 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center text-xl flex-shrink-0">
+                                            <i class="fas fa-file-signature"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-base font-bold text-white mb-1">Perbaikan / Revisi Berkas Diperlukan</h4>
+                                            <p class="text-xs text-blue-200/90 leading-relaxed">
+                                                Status berkas Anda adalah <strong>Disetujui Bersyarat</strong>. Silakan periksa instruksi perbaikan dari verifikator di atas dan unggah ulang berkas yang diminta.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="w-full sm:w-auto flex-shrink-0">
+                                        <a href="{{ route('daftar.edit', $pendaftaran) }}" 
+                                           class="claude-button w-full sm:w-auto px-5 py-2.5 text-xs font-bold whitespace-nowrap shadow-lg shadow-blue-500/20 inline-flex items-center justify-center gap-2">
+                                            <i class="fas fa-edit"></i>
+                                            <span>Buka Form Revisi Berkas</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @elseif($pendaftaran->status === 'approved')
+                            <div class="bg-green-500/10 border border-green-500/30 rounded-2xl p-6 shadow-xl">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div class="flex items-start sm:items-center gap-4">
+                                        <div class="w-12 h-12 rounded-xl bg-green-500/20 text-green-400 flex items-center justify-center text-xl flex-shrink-0">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-base font-bold text-white mb-1">Pendaftaran Telah Diterima</h4>
+                                            <p class="text-xs text-green-200/90 leading-relaxed">
+                                                Selamat! Pendaftaran Anda disetujui untuk mengikuti program magang di BPS Kabupaten Bantul.
+                                                @if(!$pendaftaran->konfirmasi_at)
+                                                    Silakan klik tombol konfirmasi kehadiran di bawah.
+                                                @else
+                                                    Kehadiran Anda telah terkonfirmasi pada {{ \Carbon\Carbon::parse($pendaftaran->konfirmasi_at)->format('d F Y, H:i') }} WIB.
+                                                @endif
+                                            </p>
+                                        </div>
+                                    </div>
+                                    @if(!$pendaftaran->konfirmasi_at)
+                                        <div class="w-full sm:w-auto flex-shrink-0">
+                                            <a href="{{ route('daftar.konfirmasi', $pendaftaran) }}" 
+                                               class="claude-button w-full sm:w-auto px-5 py-2.5 text-xs font-bold whitespace-nowrap shadow-lg shadow-green-500/20 inline-flex items-center justify-center gap-2">
+                                                <i class="fas fa-check"></i>
+                                                <span>Konfirmasi Kehadiran Sekarang</span>
+                                            </a>
+                                        </div>
+                                    @endif
+                                </div>
+                            </div>
+                        @elseif($pendaftaran->status === 'pending')
+                            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-6 shadow-xl">
+                                <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                                    <div class="flex items-start sm:items-center gap-4">
+                                        <div class="w-12 h-12 rounded-xl bg-yellow-500/20 text-yellow-400 flex items-center justify-center text-xl flex-shrink-0">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-base font-bold text-white mb-1">Menunggu Verifikasi Tim BPS</h4>
+                                            <p class="text-xs text-yellow-200/90 leading-relaxed">
+                                                Berkas Anda sedang dalam proses verifikasi. Jika ada perubahan data sebelum diproses, Anda masih dapat menyunting pendaftaran Anda.
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div class="w-full sm:w-auto flex-shrink-0">
+                                        <a href="{{ route('daftar.edit', $pendaftaran) }}" 
+                                           class="claude-button-secondary w-full sm:w-auto px-4 py-2 text-xs font-semibold whitespace-nowrap inline-flex items-center justify-center gap-2">
+                                            <i class="fas fa-edit"></i>
+                                            <span>Sunting Berkas</span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     @endif
 
                 </div>
